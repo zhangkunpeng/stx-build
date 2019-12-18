@@ -1,7 +1,5 @@
 FROM centos:7.4.1708
 
-ENV STXREPO=https://opendev.org/starlingx/fault.git
-
 RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ && \
     yum install -y postgresql-devel \
     libuuid-devel \
@@ -9,7 +7,7 @@ RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ && \
     python-setuptools \
     python2-pip \
     python2-wheel &&\
-    pip install --upgrade pip
+    pip install --upgrade pip 
 
 WORKDIR /workspace
 

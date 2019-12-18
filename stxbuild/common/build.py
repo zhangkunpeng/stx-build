@@ -16,7 +16,8 @@ class BuildManager(object):
         self.build_type = build_type
         self.distro = get_distro()
         self.buildcls = Build.backend(self.distro)
-        os.makedirs(work_path)
+        if not os.path.exists(work_path):
+            os.makedirs(work_path)
     
     def pkg_build_list(self):
         pkg_dirs_file = "%s_pkg_dirs" % self.distro
@@ -51,14 +52,13 @@ class Build(object):
     @classmethod
     def backend(cls, distro):
         for c in Build.__subclasses__():
-            print(c, c.DISTRO)
             if c.DISTRO == distro:
                 return c
-        print("Cannot find build class")
-        exit(1)
+        log.critical("Cannot find build class")
 
     def prebuild(self):
-        print("Start Build: %s" % self.pkg_path)
+        log.info("")
+        log.info("Start Build: %s" % self.pkg_path)
 
     def source_files_filter(self, filepath):
         # filepath example:

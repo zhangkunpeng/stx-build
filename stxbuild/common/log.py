@@ -1,9 +1,12 @@
-import logging
+import logging,os
 import logging.handlers
 
 logger = None
 
 def CONF(filename, name="logger"):
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+    global logger
     logger = logging.getLogger(name)
     handler1 = logging.StreamHandler()
     handler2 = logging.FileHandler(filename=filename)

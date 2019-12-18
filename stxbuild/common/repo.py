@@ -1,7 +1,8 @@
-import os
+import os,shutil
 from git import Repo
 from git import RemoteProgress
 import log
+import progressbar
 
 class RepoManager(object):
 
@@ -15,12 +16,22 @@ class RepoManager(object):
         log.info("fetch repo: %s branch: %s" % (self.url, branch))
         if os.path.isdir(self.url):
             self.repo = Repo(path)
-        elif os.path.islink(self.url):
+            self.repo.create_head(branch)
+        elif self.url.startswith("http"):
             if not path:
                 path = self.path
+            if os.path.exists(path):
+                shutil.rmtree(path)
             self.repo = Repo.clone_from(url=self.url,to_path=path, depth=1, branch=branch, progress=MyProgressPrinter())
+        else:
+            log.error("Cannot get repo")
 
 class MyProgressPrinter(RemoteProgress):
+    p = progressbar.ProgressBar()
+    def __init__(self):
+        super(MyProgressPrinter, self).__init__()
+        self.p = progressbar.ProgressBar(max_value=100)
+        
     def update(self, op_code, cur_count, max_count=None, message=''):
-        log.info(op_code, cur_count, max_count, cur_count / (max_count or 100.0), message or "NO MESSAGE")
+        self.p.update(int((cur_count / (max_count or 100.0))*100))
 # end
