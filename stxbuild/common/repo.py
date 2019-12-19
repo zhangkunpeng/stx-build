@@ -33,5 +33,6 @@ class MyProgressPrinter(RemoteProgress):
         self.p = progressbar.ProgressBar(max_value=100)
         
     def update(self, op_code, cur_count, max_count=None, message=''):
-        self.p.update(int((cur_count / (max_count or 100.0))*100))
+        self.p.max_value = max_count or 100
+        self.p.update(cur_count)
 # end
