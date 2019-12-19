@@ -10,13 +10,13 @@ podTemplate(name: 'stxbuild-centos', cloud: 'kubernetes',
       )
   ],
   volumes: [
-    persistentVolumeClaim(mountPath: '/workspace', claimName: 'devops-stxbuild-centos')
+    persistentVolumeClaim(mountPath: '/tmp', claimName: 'devops-stxbuild-centos')
   ]) {
   node("stxbuild-centos"){
     stage('build srpm') {
       container('stxbuild-centos') {
           sh """
-          build-repo --repo https://opendev.org/starlingx/fault.git --type std --workdir /workspace
+          build-repo --repo https://opendev.org/starlingx/fault.git --type std --workdir /tmp
           """
       }
     }
@@ -24,7 +24,7 @@ podTemplate(name: 'stxbuild-centos', cloud: 'kubernetes',
     stage('show') {
       container('stxbuild-centos') {
           sh """
-          find /workspace
+          find /tmp
           """
       }
     }

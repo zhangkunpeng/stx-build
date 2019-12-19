@@ -8,8 +8,8 @@ class RpmBuild(build.Build):
 
     DISTRO = "centos"
     
-    def __init__(self, work_path, pkg_path, build_type="std"):
-        super(RpmBuild, self).__init__(work_path, pkg_path)
+    def __init__(self, work_path, pkg_path, build_type):
+        super(RpmBuild, self).__init__(work_path, pkg_path, build_type)
         self.distro = "centos"
         self.source_path = os.path.join(work_path, "SOURCES")
         self.spec_path = os.path.join(work_path, "SPECS")
@@ -19,7 +19,8 @@ class RpmBuild(build.Build):
         self.SRC_DIR = None
         self.EXCLUDE_FILES_FROM_TAR = None
         self.TIS_PATCH_VER = None
-        self.build_type = build_type
+        self.rpmrepo_path = "/tmp/centos/rpm"
+        self.srpmrepo_path = "/tmp/centos/srpm"
 
     def read_build_srpm_data(self):
         for line in open(os.path.join(self.pkg_path, self.distro, "build_srpm.data")):
@@ -89,12 +90,58 @@ class RpmBuild(build.Build):
         os.makedirs(self.rpm_path)
         log.debug(self.__dict__)
 
+    def install_dependence(self, specfile):
+        subprocess.check_call(["/usr/bin/yum-builddep", specfile])
+
+    def build_srpm(self, specfile):
+        command = ["/usr/bin/rpmbuild","-bs",specfile, 
+                    "--undefine=dist", 
+                    "--define=%%_topdir %s" % self.work_path,
+                    "--define=_tis_dist .tis"]
+        log.info(" ".join(command))
+        subprocess.check_call(command)
+    
+    def build_rpm(self, srpmfile):
+        command = ["/usr/bin/rpmbuild","--rebuild",srpmfile, 
+                    "--define=platform_release %s" % self.platform_release,
+                    "--define=_tis_dist .tis"]
+        log.info(" ".join(command))
+        subprocess.check_call(command)
+
+    def copy_to_repo(self, rpmfile=None, srpmfile=None):
+        if not os.path.exists(self.rpmrepo_path):
+            os.makedirs(self.rpmrepo_path)
+        if not os.path.exists(self.srpmrepo_path):
+            os.makedirs(self.srpmrepo_path)
+        if rpmfile:
+            shutil.copy2(rpmfile, self.rpmrepo_path)
+        if srpmfile:
+            shutil.copy2(srpmfile, self.srpmrepo_path)
+
+    def update_repodata(self):
+        for repo in [self.rpmrepo_path, self.srpmrepo_path]:
+            command = ["/usr/bin/createrepo","--update",repo]
+            log.info(" ".join(command))
+            subprocess.check_call(command)
+
     def build(self):
-        for root, dirs, files in os.walk(self.spec_path):
+        for root,dirs,files in os.walk(self.spec_path):
             for filename in files:
                 if filename.endswith(".spec"):
                     spec_file = os.path.join(root, filename)
-                    subprocess.check_call(["/usr/bin/rpmbuild","-bs",spec_file, 
-                                    "--undefine=dist", 
-                                    "--define=%%_topdir %s" % self.work_path,
-                                    "--define=_tis_dist .tis"])
+                    self.install_dependence(spec_file)
+                    self.build_srpm(spec_file)
+        for root,dirs,files in os.walk(self.srpm_path):
+            for filename in files:
+                if filename.endswith(".src.rpm"):
+                    srpmfile = os.path.join(root, filename)
+                    self.build_rpm(srpmfile)
+                    self.copy_to_repo(srpmfile=srpmfile)
+
+        for root,dirs,files in os.walk(self.rpm_path):
+            for filename in files:
+                if filename.endswith(".rpm"):
+                    rpmfile = os.path.join(root, filename)
+                    self.copy_to_rpmrepo(rpmfile=rpmfile)
+        self.update_repodata()
+        
