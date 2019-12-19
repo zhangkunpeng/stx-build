@@ -78,3 +78,7 @@ class Build(object):
     
     def pkg_name_version(self):
         return "%s-%s" % (self.pkg_name, self.verison)
+
+    def mkdirs(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)

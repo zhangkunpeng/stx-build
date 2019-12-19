@@ -34,7 +34,7 @@ class RpmBuild(build.Build):
         self.TIS_PATCH_VER = self.build_srpm_data.get("TIS_PATCH_VER")
 
     def copy_spec(self):
-        os.makedirs(self.spec_path)
+        self.mkdirs(self.spec_path)
         for root, dirs, files in os.walk(os.path.join(self.pkg_path, self.distro)):
             for filename in files:
                 if filename.endswith(".spec"):
@@ -68,7 +68,7 @@ class RpmBuild(build.Build):
         self.pkg_name_version = "%s-%s" % (self.pkg_name, self.verison)
 
     def tar_sources(self):
-        os.makedirs(self.source_path)
+        self.mkdirs(self.source_path)
         tar_name = "%s.tar.gz" % self.pkg_name_version
         tar = tarfile.open(os.path.join(self.source_path, tar_name), "w:gz")
         for root, dirs, files in os.walk(os.path.join(self.pkg_path,self.SRC_DIR)):
@@ -86,8 +86,8 @@ class RpmBuild(build.Build):
         self.read_pkg_version()
         self.tar_sources()
         self.copy_spec()
-        os.makedirs(self.srpm_path)
-        os.makedirs(self.rpm_path)
+        self.mkdirs(self.srpm_path)
+        self.mkdirs(self.rpm_path)
         log.debug(self.__dict__)
 
     def install_dependence(self, specfile):
@@ -109,10 +109,8 @@ class RpmBuild(build.Build):
         subprocess.check_call(command)
 
     def copy_to_repo(self, rpmfile=None, srpmfile=None):
-        if not os.path.exists(self.rpmrepo_path):
-            os.makedirs(self.rpmrepo_path)
-        if not os.path.exists(self.srpmrepo_path):
-            os.makedirs(self.srpmrepo_path)
+        self.mkdirs(self.rpmrepo_path)
+        self.mkdirs(self.srpmrepo_path)
         if rpmfile:
             shutil.copy2(rpmfile, self.rpmrepo_path)
         if srpmfile:
