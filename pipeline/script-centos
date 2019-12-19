@@ -1,0 +1,32 @@
+podTemplate(name: 'stxbuild-centos', cloud: 'kubernetes',
+  namespace: 'devops', label: 'stxbuild-centos',
+  serviceAccount: 'default', containers: [
+  containerTemplate(
+      name: 'stxbuild-centos',
+      image: 'kunpeng4code/stx-builder:centos',
+      ttyEnabled: true,
+      privileged: false,
+      alwaysPullImage:true
+      )
+  ],
+  volumes: [
+    persistentVolumeClaim(mountPath: '/workspace', claimName: 'devops-stxbuild-centos')
+  ]) {
+  node("stxbuild-centos"){
+    stage('build srpm') {
+      container('stxbuild-centos') {
+          sh """
+          build-repo --repo https://opendev.org/starlingx/fault.git --type std --workdir /workspace
+          """
+      }
+    }
+
+    stage('show') {
+      container('stxbuild-centos') {
+          sh """
+          find /workspace
+          """
+      }
+    }
+    }
+}

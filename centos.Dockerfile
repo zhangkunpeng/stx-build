@@ -11,9 +11,9 @@ RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ && \
 
 WORKDIR /workspace
 
-COPY . ./stx-build
+COPY stx-build ./stx-build
 
-RUN cd ./stx-build && pip install -r requirements.txt && python setup.py install
+RUN cd ./stx-build && pip install -r requirements.txt && python setup.py install && rm -rf /workspace/stx-build
 
 ENV DISTRO="centos"
 
