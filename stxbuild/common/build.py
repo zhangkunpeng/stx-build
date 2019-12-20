@@ -11,11 +11,10 @@ def get_distro():
 
 class BuildManager(object):
     
-    def __init__(self, work_path, repo_path, build_type, pkgrepo):
+    def __init__(self, work_path, repo_path, build_type):
         self.work_path = work_path
         self.repo_path = repo_path
         self.build_type = build_type
-        self.pkgrepo = pkgrepo
         self.distro = get_distro()
         self.buildcls = Build.backend(self.distro)
         if not os.path.exists(work_path):
@@ -35,7 +34,7 @@ class BuildManager(object):
             log.info("WORK path: %s" % work_path)
             log.info("PKG Path: %s" % pkg_path)
             if os.path.exists(pkg_path):
-                b = self.buildcls(work_path, pkg_path, self.build_type, self.pkgrepo)
+                b = self.buildcls(work_path, pkg_path, self.build_type)
                 b.prebuild()
                 b.build()
             else:
@@ -51,7 +50,6 @@ class Build(object):
         self.pkg_name = os.path.basename(pkg_path)
         self.verison = ""
         self.platform_release = time.strftime("%y.%m", time.localtime())
-        self.pkgrepo_path = pkgrepo
         self.build_type = build_type
 
     @classmethod
