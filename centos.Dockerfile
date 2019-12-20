@@ -9,7 +9,7 @@ RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ createre
     python2-wheel &&\
     pip install --upgrade pip 
 
-COPY stx-build /stx-build
+COPY . /stx-build
 
 RUN cd /stx-build && \
     pip install -r requirements.txt && \
