@@ -91,6 +91,8 @@ class RpmBuild(build.Build):
         log.debug(self.__dict__)
 
     def install_dependence(self, specfile):
+        if not os.path.exists(os.path.join(self.rpmrepo_path, "repodata/repomd.xml")):
+            self.update_repodata()
         subprocess.check_call(["/usr/bin/yum-builddep", specfile])
 
     def build_srpm(self, specfile):
