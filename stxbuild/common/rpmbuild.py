@@ -91,8 +91,8 @@ class RpmBuild(build.Build):
         log.debug(self.__dict__)
 
     def install_dependence(self, specfile):
-        if not os.path.exists(os.path.join(self.rpmrepo_path, "repodata/repomd.xml")):
-            self.update_repodata()
+        #if not os.path.exists(os.path.join(self.rpmrepo_path, "repodata/repomd.xml")):
+        #    self.update_repodata()
         subprocess.check_call(["/usr/bin/yum-builddep", specfile])
 
     def build_srpm(self, specfile):
@@ -106,9 +106,15 @@ class RpmBuild(build.Build):
     def build_rpm(self, srpmfile):
         command = ["/usr/bin/rpmbuild","--rebuild",srpmfile, 
                     "--define=platform_release %s" % self.platform_release,
+                    "--define=%%_topdir %s" % self.work_path,
                     "--define=_tis_dist .tis"]
         log.info(" ".join(command))
         subprocess.check_call(command)
+
+    def install_rpm(self, rpmfile):
+        command = ["/usr/bin/rpm","-ivh",rpmfile]
+        log.info(" ".join(command))
+        subprocess.call(command)
 
     def copy_to_repo(self, rpmfile=None, srpmfile=None):
         self.mkdirs(self.rpmrepo_path)
@@ -145,6 +151,7 @@ class RpmBuild(build.Build):
             for filename in files:
                 if filename.endswith(".rpm"):
                     rpmfile = os.path.join(root, filename)
+                    self.install_rpm(rpmfile)
                     self.copy_to_repo(rpmfile=rpmfile)
-        self.update_repodata()
+        #self.update_repodata()
         
