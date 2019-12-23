@@ -1,0 +1,44 @@
+podTemplate(name: 'stx-build-centos', cloud: 'kubernetes',
+  namespace: 'devops', label: 'stx-build-centos',
+  serviceAccount: 'default', containers: [
+  containerTemplate(
+      name: 'stx-build-centos',
+      image: 'docker:latest',
+      ttyEnabled: true,
+      privileged: true,
+      alwaysPullImage:true
+      )
+  ],
+  volumes: [
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+    emptyDirVolume(mountPath: '/home/jenkins/agent')
+  ]) {
+  node("stx-build-centos"){
+    stage('git clone') {
+      container('jnlp') {
+          sh """
+          git clone http://devops-gitlab.devops.svc.cluster.local/root/stx-build.git
+          """
+      }
+    }
+
+    stage('build') {
+      container('stx-build-centos') {
+          sh """
+          ls
+          cd stx-build
+          docker build -t registry.local:9001/stx-builder:centos . -f centos.Dockerfile
+          """
+      }
+    }
+    
+    stage('push') {
+      container('stx-build-centos') {
+          sh """
+          docker login -u admin -p 99cloud@SH registry.local:9001
+          docker push registry.local:9001/stx-builder:centos
+          """
+      }
+    }
+  }
+}

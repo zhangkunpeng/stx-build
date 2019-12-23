@@ -120,9 +120,12 @@ class RpmBuild(build.Build):
 
     def update_repodata(self):
         for repo in [self.rpmrepo_path, self.srpmrepo_path]:
+            self.mkdirs(repo)
             command = ["/usr/bin/createrepo","--update",repo]
             log.info(" ".join(command))
             subprocess.check_call(command)
+        subprocess.check_call(["/usr/bin/yum", "clean", "all"])
+        subprocess.check_call(["/usr/bin/yum", "makecache"])
 
     def build(self):
         for root,dirs,files in os.walk(self.spec_path):
@@ -142,6 +145,6 @@ class RpmBuild(build.Build):
             for filename in files:
                 if filename.endswith(".rpm"):
                     rpmfile = os.path.join(root, filename)
-                    self.copy_to_rpmrepo(rpmfile=rpmfile)
+                    self.copy_to_repo(rpmfile=rpmfile)
         self.update_repodata()
         
