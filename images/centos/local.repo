@@ -1,0 +1,11 @@
+[stx-rpm]
+name=SatrlingX Packages - Binary
+baseurl=file:///tmp/centos/rpms/
+enabled=1
+gpgcheck=0
+
+[stx-srpm]
+name=SatrlingX Packages - Source
+baseurl=file:///tmp/centos/srpms/
+enabled=1
+gpgcheck=0
