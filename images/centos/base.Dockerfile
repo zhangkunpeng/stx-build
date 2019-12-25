@@ -27,8 +27,4 @@ RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
 # Try to continue a yum command even if a StarlingX repo is unavailable.
 RUN yum-config-manager --setopt=StarlingX\*.skip_if_unavailable=1 --save
 
-ENV BRANCH=master
-ENV ROOT_PATH="/opt/jenkins"
-COPY buildrc /etc/profile.d/buildrc.sh
-
 CMD /usr/sbin/init

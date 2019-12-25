@@ -1,6 +1,0 @@
-# ROOT_PATH BRANCH  were defined in docker or pod template
-export WORKDIR=$ROOT_PATH/$BRANCH
-export TOOLS_PATH=$WORKDIR/tools
-export MIRROR_PATH=$WORKDIR/mirror 
-export CENTOS_MIRROR=$MIRROR_PATH/cgcs-centos-repo
-export STX_MIRROR=$MIRROR_PATH/cgcs-stx-repo
