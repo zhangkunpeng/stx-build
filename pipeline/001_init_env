@@ -1,0 +1,51 @@
+podTemplate(name: 'stx-build-init', cloud: 'kubernetes',
+  namespace: 'devops', label: 'stx-build-init',
+  serviceAccount: 'default', containers: [
+  containerTemplate(
+      name: 'stx-build-init',
+      image: 'kunpeng4code/stx-builder:centos-base',
+      ttyEnabled: true,
+      privileged: false,
+      alwaysPullImage:true
+      )
+  ],
+  volumes: [
+    hostPathVolume(mountPath: '/opt/jenkins', hostPath: '/opt/jenkins')
+  ]) {
+  node("stx-build-init"){
+    stage('git clone tools') {
+      container('stx-build-init') {
+          sh """
+            if [ -d "/opt/jenkins/tools" ]; then
+                cd /opt/jenkins/tools
+                git pull
+            else
+                git clone -v https://opendev.org/starlingx/tools.git /opt/jenkins/tools --depth 1 --branch master
+            fi
+          """
+      }
+    }
+    stage('download mirrors') {
+      container('stx-build-init') {
+          sh """
+            if [ -d "/opt/jenkins/tools/centos-mirror-tools/output" ];then
+                cd /opt/jenkins/tools/centos-mirror-tools/
+                bash download_mirror.sh
+            else
+                cp -r /opt/jenkins/output /opt/jenkins/tools/centos-mirror-tools/output
+                cd /opt/jenkins/tools/centos-mirror-tools/
+                bash download_mirror.sh
+            fi
+          """
+      } 
+    }
+    stage('build mirrors') {
+      container('stx-build-init') {
+          sh """
+            cp -rf /opt/jenkins/tools/centos-mirror-tools/output/* /opt/jenkins/output/.
+            
+          """
+      } 
+    }
+  }
+}
