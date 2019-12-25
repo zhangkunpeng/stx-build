@@ -10,4 +10,9 @@ RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ createre
     python2-wheel &&\
     pip install --upgrade pip 
 
+# Install repo tool
+RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo && \
+    chmod a+x /usr/bin/repo
+ENV REPO_URL='https://aosp.tuna.tsinghua.edu.cn/git-repo'
+
 CMD /usr/sbin/init
