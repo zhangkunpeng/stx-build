@@ -36,14 +36,28 @@ podTemplate(name: 'stx-build-init', cloud: 'kubernetes',
                 cd /opt/jenkins/tools/centos-mirror-tools/
                 bash download_mirror.sh
             fi
+            cp -rf /opt/jenkins/tools/centos-mirror-tools/output/* /opt/jenkins/output/.
           """
       } 
     }
-    stage('build mirrors') {
+    stage('init repo'){
+        container('stx-build-init') {
+          sh """
+            cd /opt/jenkins/
+            repo init -u https://opendev.org/starlingx/manifest -m default.xml
+            repo sync --force-sync
+          """
+        }
+    }
+    stage('generate centos repo') {
       container('stx-build-init') {
           sh """
-            cp -rf /opt/jenkins/tools/centos-mirror-tools/output/* /opt/jenkins/output/.
-            
+            CGCS_REPO=/opt/jenkins/mirror/centos/cgcs-centos-repo
+            mkdir -p $CGCS_REPO
+            cp -rf /opt/jenkins/output/stx-r1/CentOS/pike/* $CGCS_REPO
+            cp -f /opt/jenkins/cgcs-root/build-tools/repo_files/comps.xml $CGCS_REPO/Binary/comps.xml
+            cd $CGCS_REPO/Binary/
+            createrepo -g comps.xml .
           """
       } 
     }
