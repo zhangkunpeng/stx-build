@@ -41,15 +41,15 @@ class CentosBuild(build.Build):
                 filepath = line
             elif line.startswith("repo:"):
                 # TODO 暂时未发现repo，遇到后再补充
-                filepath = line.replace("repo:",self.repo+"/",1)
+                filepath = line.replace("repo:",self.ctxt.mirror+"/",1)
             elif line.startswith("3rd_party:"):
-                filepath = line.replace("3rd_party:",self.third_party+"/",1)
+                filepath = line.replace("3rd_party:",self.ctxt.third_party+"/",1)
             elif line.startswith("mirror:"):
-                filepath = line.replace("mirror:",self.distro_repo+"/",1)\
+                filepath = line.replace("mirror:",self.ctxt.distro_repo+"/",1)\
                                 .replace("CentOS/tis-r3-CentOS/kilo/")\
                                 .replace("CentOS/tis-r3-CentOS/mitaka/")
             else:
-                filepath = self.distro_repo+"/"+line
+                filepath = self.ctxt.distro_repo+"/"+line
             if os.path.exists(filepath):
                 return filepath
             log.error("Invalid srpm path '%s', evaluated as '%s', found in '%s'" % (line, filepath, srpm_path))

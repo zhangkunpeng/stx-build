@@ -4,7 +4,7 @@ import logging.handlers
 logger = None
 
 def CONF(context):
-    filename = "%s.log" % time.strftime("%y-%m-%d-%H-%M-%S", time.localtime())
+    filename = "%s.log" % time.strftime("%y%m%d-%H%M%S", time.localtime())
     filename = os.path.join(context.rootdir, "logs", filename)
     context.logfile = filename
     if not os.path.exists(os.path.dirname(filename)):
