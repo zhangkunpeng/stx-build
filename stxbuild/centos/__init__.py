@@ -46,8 +46,8 @@ class CentosBuild(build.Build):
                 filepath = line.replace("3rd_party:",self.ctxt.third_party+"/",1)
             elif line.startswith("mirror:"):
                 filepath = line.replace("mirror:",self.ctxt.distro_repo+"/",1)\
-                                .replace("CentOS/tis-r3-CentOS/kilo/")\
-                                .replace("CentOS/tis-r3-CentOS/mitaka/")
+                                .replace("CentOS/tis-r3-CentOS/kilo/","")\
+                                .replace("CentOS/tis-r3-CentOS/mitaka/","")
             else:
                 filepath = self.ctxt.distro_repo+"/"+line
             if os.path.exists(filepath):
