@@ -1,1 +1,2 @@
-from rpmbuild import RpmBuild
+
+import stxbuild.centos.CentosBuild

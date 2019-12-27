@@ -9,59 +9,55 @@ def get_distro():
         log.critical("Cannot find distro, check env")
     return distro
 
-class BuildManager(object):
-    
-    def __init__(self, work_path, repo_path, build_type):
-        self.work_path = work_path
-        self.repo_path = repo_path
-        self.build_type = build_type
-        self.distro = get_distro()
-        self.buildcls = Build.backend(self.distro)
-        if not os.path.exists(work_path):
-            os.makedirs(work_path)
-    
-    def pkg_build_list(self):
-        pkg_dirs_file = "%s_pkg_dirs" % self.distro
-        pkg_list = []
-        with open(os.path.join(self.repo_path, pkg_dirs_file)) as f:
-            pkg_list = [ line.strip() for line in f.readlines() if line ]
-        return pkg_list
-    
-    def build_pkgs(self):
-        for pkg in self.pkg_build_list():
-            pkg_path = os.path.join(self.repo_path, pkg)
-            work_path = os.path.join(self.work_path, pkg)
-            log.info("WORK path: %s" % work_path)
-            log.info("PKG Path: %s" % pkg_path)
-            if os.path.exists(pkg_path):
-                b = self.buildcls(work_path, pkg_path, self.build_type)
-                b.prebuild()
-                b.build()
-            else:
-                log.warning("Skip: PKG not exist")
-
 class Build(object):
 
     DISTRO="None"
 
-    def __init__(self, work_path, pkg_path, build_type):
-        self.work_path = work_path
-        self.pkg_path = pkg_path
-        self.pkg_name = os.path.basename(pkg_path)
-        self.verison = ""
-        self.platform_release = time.strftime("%y.%m", time.localtime())
-        self.build_type = build_type
-
-    @classmethod
-    def backend(cls, distro):
+    def __new__(cls, *args, **kwargs):
         for c in Build.__subclasses__():
-            if c.DISTRO == distro:
-                return c
-        log.critical("Cannot find build class")
+            if c.DISTRO == get_distro():
+                return object.__new__(c, *args, **kwargs)
+        return object.__new__(cls, *args, **kwargs)
 
-    def prebuild(self):
-        log.info("")
-        log.info("Start Build: %s" % self.pkg_path)
+    def __init__(self, context):
+        self.ctxt = context
+        self.ctxt.distro = self.DISTRO
+        self.distdir = context.distdir
+        self.workdir = context.workdir
+        self.ctxt.platform_release = time.strftime("%y.%m", time.localtime())
+        self.pkg = None
+
+    def package_list(self):
+        for filename in ["%s_pkg_dirs" % self.DISTRO, "pkg_dirs"]:
+            filepath = os.path.join(self.distdir, filename)
+            if os.path.exists(filepath):
+                with open(filepath) as f:
+                    return [ line.strip() for line in f.readlines() if line ]
+        log.error("Can not find out package list")
+
+    def build(self):
+        for pkg in self.package_list():
+            self.pkg = pkg
+            pkg_path = os.path.join(self.distdir, pkg)
+            work_path = os.path.join(self.workdir, pkg)
+            log.info("****** Source: %s ==> WORK: %s" % (pkg_path,work_path))
+            if os.path.exists(pkg_path):
+                self.ctxt[pkg].pkgdir = pkg_path
+                #self.ctxt[pkg].workdir = work_path
+                self.perpare_build(self.ctxt[pkg])
+                self.execute_build(self.ctxt[pkg])
+                self.after_build(self.ctxt[pkg])
+            else:
+                log.warning("Skip: PKG not exist")
+
+    def perpare_build(self, ctxt):
+        pass
+
+    def execute_build(self, ctxt):
+        pass
+
+    def after_build(self, ctxt):
+        pass
 
     def source_files_filter(self, filepath):
         # filepath example:
@@ -73,9 +69,6 @@ class Build(object):
         if filepath.startswith("sources/centos"):
             return False
         return True
-    
-    def pkg_name_version(self):
-        return "%s-%s" % (self.pkg_name, self.verison)
 
     def mkdirs(self, path):
         if not os.path.exists(path):

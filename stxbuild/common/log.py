@@ -1,13 +1,16 @@
-import logging,os
+import logging,os, time
 import logging.handlers
 
 logger = None
 
-def CONF(filename, name="logger"):
+def CONF(context):
+    filename = "%s.log" % time.strftime("%y-%m-%d-%H-%M-%S", time.localtime())
+    filename = os.path.join(context.rootdir, "logs", filename)
+    context.logfile = filename
     if not os.path.exists(os.path.dirname(filename)):
         os.makedirs(os.path.dirname(filename))
     global logger
-    logger = logging.getLogger(name)
+    logger = logging.getLogger(context.reponame)
     handler1 = logging.StreamHandler()
     handler2 = logging.FileHandler(filename=filename)
 
