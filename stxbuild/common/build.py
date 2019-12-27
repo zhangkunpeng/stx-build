@@ -40,8 +40,7 @@ class Build(object):
         for pkg in self.package_list():
             self.pkg = pkg
             pkg_path = os.path.join(self.distdir, pkg)
-            work_path = os.path.join(self.workdir, pkg)
-            log.info("****** Source: %s ==> WORK: %s" % (pkg_path,work_path))
+            log.info("****** Source: %s ==> WORK: %s" % (pkg_path,self.workdir))
             if os.path.exists(pkg_path):
                 self.ctxt[pkg] = Context()
                 self.ctxt[pkg].pkgdir = pkg_path

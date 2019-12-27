@@ -8,20 +8,20 @@ yum = "/usr/bin/yum"
 yumconf = "/etc/local.yum.conf"
 
 def query_srpm_name(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=\'%%{NAME}\'","--nosignature", srpmfile]
+    cmd = [rpm,"-qp", "--queryformat=\'%{{NAME}}\'","--nosignature", srpmfile]
     return process.check_output(cmd)
 
 def query_srpm_version(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=\'%%{VERSION}\'","--nosignature", srpmfile]
+    cmd = [rpm,"-qp", "--queryformat=\'%{{VERSION}}\'","--nosignature", srpmfile]
     return process.check_output(cmd)
 
 def query_srpm_release(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=\'%%{RELEASE}\'","--nosignature", srpmfile]
+    cmd = [rpm,"-qp", "--queryformat=\'%{{RELEASE}}\'","--nosignature", srpmfile]
     return process.check_output(cmd)
 
 def srpm_extract(ctxt):
     # rpm -i --nosignature --root=$ROOT_DIR --define="%_topdir $BUILD_DIR" $ORIG_SRPM_PATH 2>> /dev/null
-    cmd = [rpm, "-i", "--nosignature", "--define=\"%%_topdir %s\"" % ctxt.build_dir, ctxt.orig_srpm_path, "2>>","/dev/null"]
+    cmd = [rpm, "-i", "--nosignature", "--define=\"%%_topdir %s\"" % ctxt.build_dir, ctxt.orig_srpm_path]
     process.check_call(cmd)
 
 def query_spec_release(ctxt, specfile):
@@ -31,9 +31,9 @@ def query_spec_release(ctxt, specfile):
         if r :
             release = r.group(1)
     if release:
-        release = release.replace("%%{{tis_patch_ver}}", ctxt.TIS_PATCH_VER)\
-                         .replace("%%{{?_tis_dist}}", ctxt.TIS_DIST)\
-                         .replace("%%{{_tis_dist}}", ctxt.TIS_DIST)
+        release = release.replace("%{{tis_patch_ver}}", ctxt.TIS_PATCH_VER)\
+                         .replace("%{{?_tis_dist}}", ctxt.TIS_DIST)\
+                         .replace("%{{_tis_dist}}", ctxt.TIS_DIST)
     return release
 
 def build_srpm(ctxt, platform_release, build_type):
