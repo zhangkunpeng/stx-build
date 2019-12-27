@@ -9,7 +9,7 @@ def patch_apply(ctxt, patchfile):
     process.check_call(cmd, cwd=ctxt.build_dir)
 
 def apply_meta_patches(ctxt):
-    ctxt.meta_patch_dir = os.path.join(ctxt.pkgdir, ctxt.distro, "meta_patches")
+    ctxt.meta_patch_dir = os.path.join(ctxt.distro_dir, "meta_patches")
     log.info('apply meta patches. DIR: %s' % ctxt.meta_patch_dir)
     ctxt.meta_patch_order = os.path.join(ctxt.meta_patch_dir, "PATCH_ORDER")
     log.info("PATCH ORDER: %s" % ctxt.meta_patch_order)
@@ -18,7 +18,7 @@ def apply_meta_patches(ctxt):
         patch_apply(ctxt, patchfile)
 
 def add_other_patches(ctxt):
-    patch_dir = os.path.join(ctxt.pkgdir, ctxt.distro, "patches")
+    patch_dir = os.path.join(ctxt.distro_dir, "patches")
     if not os.path.exists(patch_dir):
         log.info("patches not found in %s" % ctxt.pkgdir)
         return

@@ -16,6 +16,7 @@ class CentosBuild(build.Build):
 
     def perpare_build(self, ctxt):
         ctxt.TIS_DIST = self.ctxt.TIS_DIST
+        ctxt.distro_dir = os.path.join(ctxt.pkgdir, self.DISTRO)
         self.find_build_mode(ctxt)
         self.find_build_data(ctxt)
         self.find_pkg_name_ver(ctxt)
