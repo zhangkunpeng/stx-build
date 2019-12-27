@@ -1,2 +1,2 @@
 
-import stxbuild.centos.CentosBuild
+from stxbuild.centos import CentosBuild
