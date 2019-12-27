@@ -4,7 +4,7 @@ import process
 
 git="/usr/bin/git"
 def checkout(context):
-    context.distdir = os.path.join(context.rootdir, context.reponame)
+    context.distdir = os.path.join(context.rootdir, "source")
     log.info("fetch repo: %s, branch: %s, distdir: %s" % (context.source, context.branch, context.distdir))
     if os.path.exists(context.distdir) and context.source != context.distdir:
         shutil.rmtree(context.distdir)

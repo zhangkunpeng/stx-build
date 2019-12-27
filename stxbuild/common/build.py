@@ -2,6 +2,7 @@ import os,shutil
 import tarfile,re
 import log
 import time
+from context import Context
 
 def get_distro():
     distro = os.environ.get("DISTRO", None)
@@ -42,6 +43,7 @@ class Build(object):
             work_path = os.path.join(self.workdir, pkg)
             log.info("****** Source: %s ==> WORK: %s" % (pkg_path,work_path))
             if os.path.exists(pkg_path):
+                self.ctxt[pkg] = Context()
                 self.ctxt[pkg].pkgdir = pkg_path
                 #self.ctxt[pkg].workdir = work_path
                 self.perpare_build(self.ctxt[pkg])
