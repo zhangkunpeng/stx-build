@@ -1,9 +1,9 @@
 
 from common import args, log
-from common import git
+from common import shell
 from common.context import Context
 from common.build import Build
-import json
+import json,sys
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     log.debug(json.dumps(context))
     log.info("Start to build repo %s" % context.reponame)
 
-    git.checkout(context)
+    shell.git_checkout(context)
 
     build = Build(context)
     build.build()

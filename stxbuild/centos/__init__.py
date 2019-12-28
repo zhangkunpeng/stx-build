@@ -1,6 +1,6 @@
 __all__ = ['rpm', 'CentosBuild']
 
-from stxbuild.common import build, log, git, patch, shell, utils
+from stxbuild.common import build, log, shell, utils
 from stxbuild.common.context import Context
 import os, shutil, json
 import rpm
@@ -89,9 +89,10 @@ class CentosBuild(build.Build):
         if ctxt.TIS_PATCH_VER.startswith("GITREVCOUNT"):
             if not ctxt.TIS_BASE_SRCREV:
                 log.error("TIS_BASE_SRCREV must be set in %s" % ctxt.build_srpm_data)
-            items = ctxt.TIS_BASE_SRCREV.split("+")
-            count = 0 if len(items) == 1 else int(items[1])
-            count = count + git.commit_count(ctxt) + git.plus_by_status(ctxt)
+            items = ctxt.TIS_PATCH_VER.split("+")
+            count = 0 if len(items) == 1 else int(items[1]) + \
+                    shell.git_commit_count(ctxt.pkgdir,ctxt.TIS_BASE_SRCREV) + \
+                    shell.git_plus_by_status(ctxt.pkgdir)
             ctxt.TIS_PATCH_VER = str(count)
         ctxt.FILES_BASE = "%s/files" % self.DISTRO
         ctxt.CGCS_BASE = self.ctxt.distro_repo
@@ -127,7 +128,7 @@ class CentosBuild(build.Build):
             rpm.srpm_extract(ctxt)
         if ctxt.orig_sepc_path:
             pass
-        patch.apply_meta_patches(ctxt)
+        self.apply_meta_patches(ctxt)
         self.copy_additional_patch(ctxt)
         self.copy_additional_src(ctxt)
         ctxt.specfiles = utils.find_out_files(ctxt.build_spec_dir, ".spec")
@@ -170,3 +171,12 @@ class CentosBuild(build.Build):
         ctxt.rpmfiles = utils.find_out_files(ctxt.build_rpm_dir, ".rpm")
         for rpmfile in ctxt.rpmfiles + ctxt.srpmfiles:
             utils.copy(rpmfile, self.ctxt.output)
+
+    def apply_meta_patches(self, ctxt):
+        ctxt.meta_patch_dir = os.path.join(ctxt.distro_dir, "meta_patches")
+        log.info('apply meta patches. DIR: %s' % ctxt.meta_patch_dir)
+        ctxt.meta_patch_order = os.path.join(ctxt.meta_patch_dir, "PATCH_ORDER")
+        log.info("PATCH ORDER: %s" % ctxt.meta_patch_order)
+        for line in open(ctxt.meta_patch_order):
+            patchfile = os.path.join(ctxt.meta_patch_dir, line.strip())
+            shell.patch_apply(ctxt, patchfile)
