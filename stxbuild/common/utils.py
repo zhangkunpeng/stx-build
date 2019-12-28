@@ -16,7 +16,9 @@ def copy(src, dist):
         log.error("Copy Failed. src path %s is not exist" % src)
 
 def find_files(d, suffix):
-    files = [ os.path.join(d, f) for f in os.listdir(d) if f.endswith(suffix)]
+    files = []
+    for root, dirs, files in os.walk(d):
+        files.extend([ os.path.join(root, f) for f in files if f.endswith(suffix)])
     if files:
         log.info("Find out %s files: %s" % (suffix, files))
     return files
