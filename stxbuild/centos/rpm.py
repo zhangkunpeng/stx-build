@@ -1,4 +1,4 @@
-from stxbuild.common import process
+from stxbuild.common import process, log
 import os, re, subprocess
 rpm = "/usr/bin/rpm"
 rpmbuild = "/usr/bin/rpmbuild"
@@ -7,16 +7,8 @@ createrepo = "/usr/bin/createrepo"
 yum = "/usr/bin/yum"
 yumconf = "/etc/local.yum.conf"
 
-def query_srpm_name(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=%{NAME}","--nosignature", srpmfile]
-    return process.check_output(cmd).strip()
-
-def query_srpm_version(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=%{VERSION}","--nosignature", srpmfile]
-    return process.check_output(cmd).strip()
-
-def query_srpm_release(srpmfile):
-    cmd = [rpm,"-qp", "--queryformat=%{RELEASE}","--nosignature", srpmfile]
+def query_srpm_tag(srpmfile, tag):
+    cmd = [rpm,"-qp", "--queryformat=%%{%s}" % tag.upper(), "--nosignature", srpmfile]
     return process.check_output(cmd).strip()
 
 def srpm_extract(ctxt):
@@ -24,30 +16,32 @@ def srpm_extract(ctxt):
     cmd = [rpm, "-i", "--nosignature", "--define", "%%_topdir %s" % ctxt.build_dir, ctxt.orig_srpm_path]
     process.check_call(cmd, stderr=-2)
 
-def query_spec_release(ctxt, specfile):
-    release = None
-    for line in open(specfile):
-        r = re.search(r'^Release: (.*)', line.strip())
+def query_spec_tag(ctxt, tag):
+    for line in open(ctxt.orig_sepc_path):
+        r = re.search('^%s: (.*)' % tag.capitalize(), line.strip())
         if r :
-            release = r.group(1)
-    if release:
-        release = release.replace("%{{tis_patch_ver}}", ctxt.TIS_PATCH_VER)\
-                         .replace("%{{?_tis_dist}}", ctxt.TIS_DIST)\
-                         .replace("%{{_tis_dist}}", ctxt.TIS_DIST)
-    return release
+            out = r.group(1)
+            break
+    if out:
+        out = out.replace("%{tis_patch_ver}", ctxt.TIS_PATCH_VER)\
+                 .replace("%{?_tis_dist}", ctxt.TIS_DIST)\
+                 .replace("%{_tis_dist}", ctxt.TIS_DIST)
+    else:
+        log.error("query spec tag: %s in %s failed" % (tag, ctxt.orig_sepc_path))
+    return out
 
 def build_srpm(ctxt, platform_release, build_type):
     # sed -i -e "1 i%define _tis_build_type $BUILD_TYPE" $SPEC_PATH
     # sed -i -e "1 i%define tis_patch_ver $TIS_PATCH_VER" $SPEC_PATH
     lines = []
-    with open(ctxt.specfile, 'r') as f:
+    with open(ctxt.specfiles[0], 'r') as f:
         for l in f:
             lines.append(l)
     lines.insert(0, "%%define _tis_build_type %s\n" % build_type)
     lines.insert(0, "%%define tis_patch_ver %s\n" % ctxt.TIS_PATCH_VER)
-    with open(ctxt.specfile, 'w') as f:
+    with open(ctxt.specfiles[0], 'w') as f:
         f.write(''.join(lines))
-    cmd = [rpmbuild,"-bs",ctxt.specfile, 
+    cmd = [rpmbuild,"-bs",ctxt.specfiles[0], 
                     "--undefine=dist", 
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
@@ -55,7 +49,7 @@ def build_srpm(ctxt, platform_release, build_type):
     process.check_call(cmd)
 
 def build_rpm(ctxt, platform_release):
-    cmd = [rpmbuild,"--rebuild", ctxt.srpmfile, 
+    cmd = [rpmbuild,"--rebuild", ctxt.srpmfiles[0], 
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
                     "--define=_tis_dist %s" % ctxt.TIS_DIST]
