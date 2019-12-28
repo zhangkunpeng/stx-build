@@ -5,8 +5,9 @@ patch="/usr/bin/patch"
 def patch_apply(ctxt, patchfile):
     log.info("apply patch: %s" % patchfile)
     #patch -f $PATCH_ARGS --no-backup-if-mismatch < $PATCH
-    cmd = [patch, '-f', '-p1', '--no-backup-if-mismatch', '<', patchfile]
-    process.check_call(cmd, cwd=ctxt.build_dir)
+    #cmd = [patch, '-f', '-p1', '--no-backup-if-mismatch', '<', patchfile]
+    cmd = ["%s -f -p1 --no-backup-if-mismatch < %s" %(patch, patchfile)]
+    process.check_call(cmd, cwd=ctxt.build_dir, shell=True)
 
 def apply_meta_patches(ctxt):
     ctxt.meta_patch_dir = os.path.join(ctxt.distro_dir, "meta_patches")
