@@ -22,7 +22,7 @@ def query_srpm_release(srpmfile):
 def srpm_extract(ctxt):
     # rpm -i --nosignature --root=$ROOT_DIR --define="%_topdir $BUILD_DIR" $ORIG_SRPM_PATH 2>> /dev/null
     cmd = [rpm, "-i", "--nosignature", "--define='%%_topdir %s'" % ctxt.build_dir, ctxt.orig_srpm_path]
-    process.check_call(cmd, stderr=-3)
+    process.check_call(cmd, stderr=-2)
 
 def query_spec_release(ctxt, specfile):
     release = None
