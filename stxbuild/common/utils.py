@@ -17,8 +17,8 @@ def copy(src, dist):
 
 def find_files(d, suffix):
     files = []
-    for root, dirs, files in os.walk(d):
-        files.extend([ os.path.join(root, f) for f in files if f.endswith(suffix)])
+    for root, dirs, filenames in os.walk(d):
+        files.extend([ os.path.join(root, f) for f in filenames if f.endswith(suffix)])
     if files:
         log.info("Find out %s files: %s" % (suffix, files))
     return files
