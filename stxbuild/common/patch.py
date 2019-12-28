@@ -31,6 +31,7 @@ def add_other_patches(ctxt):
         shutil.copy2(patchfile, copyto)
 
 def add_other_files(ctxt):
+    # 逻辑有问题，需要修复
     files_dir = os.path.join(ctxt.pkgdir, "files")
     if not os.path.exists(files_dir):
         log.info("patches not found in %s" % ctxt.pkgdir)
