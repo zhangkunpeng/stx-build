@@ -70,7 +70,7 @@ def install_rpm(rpmfile):
     process.check_call(cmd)
 
 def update_repodata(repopath):
-    cmd = [createrepo,"-c", yumconf, "--update", repopath]
+    cmd = [createrepo, "--update", repopath]
     process.check_call(cmd)
 
 def yum_clean_cache():
