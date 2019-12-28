@@ -175,6 +175,9 @@ class CentosBuild(build.Build):
 
     def apply_meta_patches(self, ctxt):
         ctxt.meta_patch_dir = os.path.join(ctxt.distro_dir, "meta_patches")
+        if not os.path.exists(ctxt.meta_patch_dir):
+            log.info("no meta patches")
+            return
         log.info('apply meta patches. DIR: %s' % ctxt.meta_patch_dir)
         ctxt.meta_patch_order = os.path.join(ctxt.meta_patch_dir, "PATCH_ORDER")
         log.info("PATCH ORDER: %s" % ctxt.meta_patch_order)
