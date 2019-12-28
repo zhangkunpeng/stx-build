@@ -27,7 +27,6 @@ class Build(object):
         self.workdir = context.workdir
         self.ctxt.platform_release = time.strftime("%y.%m", time.localtime())
         self.pkg = None
-        self.mkdirs(self.ctxt.output)
 
     def package_list(self):
         for filename in ["%s_pkg_dirs" % self.DISTRO, "pkg_dirs"]:

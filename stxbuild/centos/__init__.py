@@ -13,6 +13,7 @@ class CentosBuild(build.Build):
         self.ctxt.distro_repo = os.path.join(context.mirror, "cgcs-centos-repo")
         self.ctxt.third_party = os.path.join(context.mirror, "cgcs-3rd-party-repo")
         self.ctxt.output = os.path.join(context.mirror, self.ctxt.build_type, "rpmbuild/RPMS")
+        self.mkdirs(self.ctxt.output)
         log.info(json.dumps(self.ctxt, indent=4))
 
     def perpare_build(self, ctxt):
