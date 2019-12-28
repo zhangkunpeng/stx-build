@@ -25,7 +25,7 @@ def query_spec_tag(ctxt, tag):
     if out:
         out = out.replace("%{tis_patch_ver}", ctxt.TIS_PATCH_VER)\
                  .replace("%{?_tis_dist}", ctxt.TIS_DIST)\
-                 .replace("%{_tis_dist}", ctxt.TIS_DIST)
+                 .replace("%{_tis_dist}", ctxt.TIS_DIST).strip()
     else:
         log.error("query spec tag: %s in %s failed" % (tag, ctxt.orig_sepc_path))
     return out
