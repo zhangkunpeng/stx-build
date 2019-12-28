@@ -13,7 +13,7 @@ def patch_apply(ctxt, patchfile):
 
 def echo_env(ctxt, KEY):
     cmd = ["source %s && echo $%s" % (ctxt.build_srpm_data ,KEY)]
-    process.check_output(cmd, env=ctxt, shell=True)
+    return process.check_output(cmd, env=ctxt, shell=True)
 
 def git_checkout(context):
     context.distdir = os.path.join(context.rootdir, "source")

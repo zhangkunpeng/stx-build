@@ -14,7 +14,7 @@ def query_srpm_tag(srpmfile, tag):
 def srpm_extract(ctxt):
     # rpm -i --nosignature --root=$ROOT_DIR --define="%_topdir $BUILD_DIR" $ORIG_SRPM_PATH 2>> /dev/null
     cmd = [rpm, "-i", "--nosignature", "--define", "%%_topdir %s" % ctxt.build_dir, ctxt.orig_srpm_path]
-    process.check_call(cmd, stderr=-2)
+    process.check_call(cmd, stderr=-1)
 
 def query_spec_tag(ctxt, tag):
     for line in open(ctxt.orig_sepc_path):
