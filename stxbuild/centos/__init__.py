@@ -136,7 +136,7 @@ class CentosBuild(build.Build):
         # ctxt.release = rpm.query_spec_release(ctxt, ctxt.specfile)
         rpm.build_srpm(ctxt, self.ctxt.platform_release, self.ctxt.build_type)
         ctxt.srpmfiles = utils.find_out_files(ctxt.build_srpm_dir, ".src.rpm")
-        ctxt.release = rpm.query_srpm_tag(ctxt.srpmfile, "Release")
+        ctxt.release = rpm.query_srpm_tag(ctxt.srpmfiles[0], "Release")
 
     def copy_additional_src(self, ctxt):
         # 复制额外的source 到 rpmbuild/SOURCES
