@@ -165,7 +165,7 @@ class CentosBuild(build.Build):
         utils.copy(ctxt.patch_dir, ctxt.build_src_dir)
 
     def compile(self, ctxt):
-        rpm.install_build_dependence(ctxt.srpmfile)
+        rpm.install_build_dependence(ctxt.srpmfiles[0])
         rpm.build_rpm(ctxt, self.ctxt.platform_release)
 
     def copy_to_output(self, ctxt):
