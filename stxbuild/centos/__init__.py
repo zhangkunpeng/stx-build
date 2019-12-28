@@ -147,7 +147,7 @@ class CentosBuild(build.Build):
         rpm.build_rpm(ctxt, self.ctxt.platform_release)
 
     def copy_to_output(self, ctxt):
-        shutil.copy2(ctxt.srpmfile, self.ctxt.output)
+        self.mkdirs(self.ctxt.output)
         log.info("copy %s to %s" % (ctxt.srpmfile, self.ctxt.output))
         ctxt.rpmdir = os.path.join(ctxt.build_dir, "RPMS")
         ctxt.rpmfiles = [ os.path.join(ctxt.rpmdir, filename) \
