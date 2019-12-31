@@ -67,11 +67,11 @@ class CentosBuild(build.Build):
         spec_path = os.path.join(ctxt.pkgdir, self.DISTRO)
         for filename in os.listdir(spec_path):
             if filename.endswith(".spec"):
-                ctxt.orig_sepc_path = os.path.join(spec_path, filename)
+                ctxt.orig_spec_path = os.path.join(spec_path, filename)
                 ctxt.build_mode = "spec"
-        if ctxt.orig_sepc_path and ctxt.orig_srpm_path:
+        if ctxt.orig_spec_path and ctxt.orig_srpm_path:
             log.error("Please provide only one of srpm_path or .spec files, not both, in '%s'" % spec_path)
-        if not ctxt.orig_sepc_path and not ctxt.orig_srpm_path:
+        if not ctxt.orig_spec_path and not ctxt.orig_srpm_path:
             log.error("Please provide only one of srpm_path or .spec files, not None, in '%s'" % spec_path)
 
     def find_build_data(self, ctxt):
@@ -104,7 +104,7 @@ class CentosBuild(build.Build):
             ctxt.version = rpm.query_srpm_tag(ctxt.orig_srpm_path, "Version")
             ctxt.release = rpm.query_srpm_tag(ctxt.orig_srpm_path, "Release")
             ctxt.fullname = "%s-%s-%s" % (ctxt.name, ctxt.version, ctxt.release)
-        if ctxt.orig_sepc_path:
+        if ctxt.orig_spec_path:
             ctxt.name = rpm.query_spec_tag(ctxt, "Name")
             ctxt.version = rpm.query_spec_tag(ctxt, "Version")
             ctxt.release = rpm.query_spec_tag(ctxt, "Release")
@@ -127,8 +127,8 @@ class CentosBuild(build.Build):
     def perpare_source(self, ctxt):
         if ctxt.orig_srpm_path:
             rpm.srpm_extract(ctxt)
-        if ctxt.orig_sepc_path:
-            pass
+        if ctxt.orig_spec_path:
+            utils.copy(ctxt.orig_spec_path, ctxt.build_spec_dir)
         self.apply_meta_patches(ctxt)
         self.copy_additional_patch(ctxt)
         self.copy_additional_src(ctxt)

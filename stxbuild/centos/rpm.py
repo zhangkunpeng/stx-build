@@ -17,7 +17,7 @@ def srpm_extract(ctxt):
     process.check_call(cmd, stderr=-1)
 
 def query_spec_tag(ctxt, tag):
-    for line in open(ctxt.orig_sepc_path):
+    for line in open(ctxt.orig_spec_path):
         r = re.search('^%s: (.*)' % tag.capitalize(), line.strip())
         if r :
             out = r.group(1)
@@ -27,7 +27,7 @@ def query_spec_tag(ctxt, tag):
                  .replace("%{?_tis_dist}", ctxt.TIS_DIST)\
                  .replace("%{_tis_dist}", ctxt.TIS_DIST).strip()
     else:
-        log.error("query spec tag: %s in %s failed" % (tag, ctxt.orig_sepc_path))
+        log.error("query spec tag: %s in %s failed" % (tag, ctxt.orig_spec_path))
     return out
 
 def build_srpm(ctxt, platform_release, build_type):
