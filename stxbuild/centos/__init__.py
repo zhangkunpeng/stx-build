@@ -151,12 +151,10 @@ class CentosBuild(build.Build):
             ctxt.copy_path_list = shell.echo_env(ctxt, "COPY_LIST").split(" ")
             if not ctxt.copy_path_list:
                 log.error(" [%s] ctxt.copy_path_list not exist" % ctxt.name)
-        ctxt.build_src_dir = os.path.join(ctxt.build_dir, "SOURCES")
-        self.mkdirs(ctxt.build_src_dir)
-        for p in ctxt.copy_path_list:
-            p = p[:-2] if p.endswith("/*") else p
-            p = p if os.path.isabs(p) else os.path.join(ctxt.pkgdir, p)
-            utils.copy(p, ctxt.build_src_dir)
+            for p in ctxt.copy_path_list:
+                p = p[:-2] if p.endswith("/*") else p
+                p = p if os.path.isabs(p) else os.path.join(ctxt.pkgdir, p)
+                utils.copy(p, ctxt.build_src_dir)
     
     def copy_additional_patch(self, ctxt):
         # 复制centos/patches/* 到 rpmbuild/SOURCES
