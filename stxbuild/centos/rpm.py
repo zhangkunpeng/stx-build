@@ -2,6 +2,7 @@ from stxbuild.common import process, log
 import os, re, subprocess
 rpm = "/usr/bin/rpm"
 rpmbuild = "/usr/bin/rpmbuild"
+rpmspec = "/usr/bin/rpmspec"
 yumbuilddep = "/usr/bin/yum-builddep"
 createrepo = "/usr/bin/createrepo"
 yum = "/usr/bin/yum"
@@ -16,19 +17,27 @@ def srpm_extract(ctxt):
     cmd = [rpm, "-i", "--nosignature", "--define", "%%_topdir %s" % ctxt.build_dir, ctxt.orig_srpm_path]
     process.check_call(cmd, stderr=-1)
 
-def query_spec_tag(ctxt, tag):
-    for line in open(ctxt.orig_spec_path):
+def query_spec_tag(specfile, tag):
+    for line in open(specfile):
         r = re.search('^%s: (.*)' % tag.capitalize(), line.strip())
         if r :
             out = r.group(1)
             break
-    if out:
-        out = out.replace("%{tis_patch_ver}", ctxt.TIS_PATCH_VER)\
-                 .replace("%{?_tis_dist}", ctxt.TIS_DIST)\
-                 .replace("%{_tis_dist}", ctxt.TIS_DIST).strip()
-    else:
-        log.error("query spec tag: %s in %s failed" % (tag, ctxt.orig_spec_path))
+    if not out:
+        log.error("query spec tag: %s in %s failed" % (tag, specfile))
     return out
+
+def build_tmp_spec(ctxt, platform_release, build_type):
+    cmd = [rpmspec, "-P", ctxt.orig_spec_path,
+                    "--define=platform_release %s" % platform_release,
+                    "--define=%%_topdir %s" % ctxt.workdir,
+                    "--define=_tis_dist %s" % ctxt.TIS_DIST,
+                    "--define=tis_patch_ver %s" % ctxt.TIS_PATCH_VER,
+                    "--define=_tis_build_type %s" % build_type]
+    out = process.check_output(cmd)
+    ctxt.tmpspec = os.path.join(ctxt.workdir, "tmp_"+os.path.basename(ctxt.orig_spec_path))
+    with open(ctxt.tmpspec, "w") as f:
+        f.write(out)
 
 def build_srpm(ctxt, platform_release, build_type):
     # sed -i -e "1 i%define _tis_build_type $BUILD_TYPE" $SPEC_PATH

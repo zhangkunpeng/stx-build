@@ -105,9 +105,10 @@ class CentosBuild(build.Build):
             ctxt.release = rpm.query_srpm_tag(ctxt.orig_srpm_path, "Release")
             ctxt.fullname = "%s-%s-%s" % (ctxt.name, ctxt.version, ctxt.release)
         if ctxt.orig_spec_path:
-            ctxt.name = rpm.query_spec_tag(ctxt, "Name")
-            ctxt.version = rpm.query_spec_tag(ctxt, "Version")
-            ctxt.release = rpm.query_spec_tag(ctxt, "Release")
+            rpm.build_tmp_spec(ctxt, self.ctxt.platform_release, self.ctxt.build_type)
+            ctxt.name = rpm.query_spec_tag(ctxt.tmpspec, "Name")
+            ctxt.version = rpm.query_spec_tag(ctxt.tmpspec, "Version")
+            ctxt.release = rpm.query_spec_tag(ctxt.tmpspec, "Release")
         ctxt.fullname = "%s-%s-%s" % (ctxt.name, ctxt.version, ctxt.release)
         # log.error("TODO spec")
 
