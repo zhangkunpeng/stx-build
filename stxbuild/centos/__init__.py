@@ -61,9 +61,11 @@ class CentosBuild(build.Build):
         if os.path.exists(srpm_path):
             with open(srpm_path) as f:
                 for line in f.readlines():
-                    ctxt.orig_srpm_path = orig_srpm_path(line.strip())
-                    ctxt.build_mode = "srpm"
-        
+                    line = line.strip()
+                    if line:
+                        ctxt.orig_srpm_path = orig_srpm_path(line)
+                        ctxt.build_mode = "srpm"
+
         spec_path = os.path.join(ctxt.pkgdir, self.DISTRO)
         for filename in os.listdir(spec_path):
             if filename.endswith(".spec"):
