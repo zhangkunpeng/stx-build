@@ -25,7 +25,7 @@ def query_spec_tag(specfile, tag):
             break
     if not out:
         log.error("query spec tag: %s in %s failed" % (tag, specfile))
-    return out
+    return out.strip()
 
 def build_tmp_spec(ctxt, platform_release, build_type):
     cmd = [rpmspec, "-P", ctxt.orig_spec_path,
