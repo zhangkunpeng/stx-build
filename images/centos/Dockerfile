@@ -1,13 +1,7 @@
 FROM centos:7.4.1708
 
 ENV DISTRO="centos"
-RUN yum install -y epel-release git rpm-build rpm-sign make gcc gcc-c++ createrepo wget bzip2 sudo && \
-    yum install -y postgresql-devel \
-    libuuid-devel \
-    python-devel \
-    python-setuptools \
-    python2-pip \
-    python2-wheel &&\
+RUN yum install -y epel-release git rpm-build rpm-sign make createrepo wget bzip2 sudo python2-pip && \
     pip install --upgrade pip 
 
 # Install repo tool
