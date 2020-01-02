@@ -83,3 +83,7 @@ def yum_clean_cache():
 def yum_makecache():
     cmd = [yum,"-c", yumconf, "makecache"]
     process.check_call(cmd)
+
+def yum_install(package):
+    cmd = [yum,"-c", yumconf, "install", package]
+    process.check_call(cmd)
