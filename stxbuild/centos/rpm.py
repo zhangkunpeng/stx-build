@@ -30,12 +30,12 @@ def query_spec_tag(specfile, tag):
 def build_tmp_spec(ctxt, platform_release, build_type):
     cmd = [rpmspec, "-P", ctxt.orig_spec_path,
                     "--define=platform_release %s" % platform_release,
-                    "--define=%%_topdir %s" % ctxt.workdir,
+                    "--define=%%_topdir %s" % "/tmp",
                     "--define=_tis_dist %s" % ctxt.TIS_DIST,
                     "--define=tis_patch_ver %s" % ctxt.TIS_PATCH_VER,
                     "--define=_tis_build_type %s" % build_type]
     out = process.check_output(cmd)
-    ctxt.tmpspec = os.path.join(ctxt.workdir, "tmp_"+os.path.basename(ctxt.orig_spec_path))
+    ctxt.tmpspec = os.path.join("/tmp", "tmp_"+os.path.basename(ctxt.orig_spec_path))
     with open(ctxt.tmpspec, "w") as f:
         f.write(out)
 
