@@ -1,0 +1,74 @@
+
+def BRANCH="master"
+def LABEL="stx-build-centos-${BRANCH}-compile"
+def PODNAME=LABEL
+def WORKCONTAINER=LABEL
+def BUILD_TIME="/opt/jenkins/centos/${BRANCH}/.buildtime"
+def BUILD_DIR="/opt/jenkins/centos/${BRANCH}"
+def BUILD_FLAG="compile"
+def HTTP_PATH="/usr/local/apache2/htdocs"
+def MIRROR_PATH="/opt/jenkins/centos/${BRANCH}/mirror"
+
+podTemplate(
+    name: PODNAME,
+    cloud: 'kubernetes',
+    namespace: 'devops',
+    label: LABEL,
+    serviceAccount: 'default',
+    containers: [
+        containerTemplate(
+            name: WORKCONTAINER,
+            image: 'kunpeng4code/stx-builder:centos7-aliyun',
+            ttyEnabled: true,
+            privileged: false,
+            alwaysPullImage:true
+        ),
+        containerTemplate(
+            name: 'stx-build-httpd',
+            image: 'httpd:2',
+            ttyEnabled: true,
+            privileged: false,
+            alwaysPullImage:false
+        )
+    ],
+    envVars: [
+        envVar(key: "BRANCH", value: "master")
+    ],
+    volumes: [
+        hostPathVolume(mountPath: BUILD_DIR, hostPath: BUILD_DIR),
+        hostPathVolume(mountPath: HTTP_PATH, hostPath: MIRROR_PATH),
+        hostPathVolume(mountPath: BUILD_TIME, hostPath: BUILD_TIME),
+
+    ]
+) {
+    node(LABEL){
+        stage('check yum centos repo') {
+            container(WORKCONTAINER) {
+                sh """
+                    yum makecache
+                """
+            } 
+        }
+        stage('install build tools') {
+            container(WORKCONTAINER) {
+                sh """
+                    git clone https://github.com/zhangkunpeng/stx-build.git --depth 1
+                    cd stx-build && python setup.py install
+                """
+            } 
+        }
+        stage('Build') {
+            container(WORKCONTAINER) {
+                def BUILD_DATE = sh(script: "cat ${BUILD_TIME}", returnStdout: true).trim()
+                BUILD_DIR = "${BUILD_DIR}/${BUILD_DATE}/${BUILD_FLAG}"
+                withEnv(["MIRROR=${HTTP_PATH}","BRANCH=${BRANCH}"]){
+                    sh """
+                        echo "MIRROR=$MIRROR"
+                        echo "BRANCH=$BRANCH"
+                        build --source https://opendev.org/starlingx/compile.git --rootdir $BUILD_DIR --type std
+                    """
+                }
+            } 
+        }
+    }
+}

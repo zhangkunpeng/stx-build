@@ -1,0 +1,85 @@
+def BRANCH="master"
+def LABEL="stx-build-centos-${BRANCH}-mirror"
+def PODNAME=LABEL
+def WORKCONTAINER=LABEL
+def TOOLS_PATH="/opt/jenkins/centos/${BRANCH}/tools"
+def BACKUP_PATH="/opt/jenkins/centos/${BRANCH}/backup"
+def HTTP_PATH="/usr/local/apache2/htdocs"
+def MIRROR_PATH="/opt/jenkins/centos/${BRANCH}/mirror"
+podTemplate(
+    name: PODNAME,
+    cloud: 'kubernetes',
+    namespace: 'devops', 
+    label: LABEL,
+    serviceAccount: 'default', 
+    containers: [
+        containerTemplate(
+            name: WORKCONTAINER,
+            image: 'kunpeng4code/stx-builder:centos7-repo',
+            ttyEnabled: true,
+            privileged: false,
+            alwaysPullImage:true
+        ),
+        containerTemplate(
+            name: 'stx-build-httpd',
+            image: 'httpd:2',
+            ttyEnabled: true,
+            privileged: false,
+            alwaysPullImage:false
+        )
+    ],
+    volumes: [
+        hostPathVolume(mountPath: TOOLS_PATH, hostPath: TOOLS_PATH),
+        hostPathVolume(mountPath: BACKUP_PATH, hostPath: BACKUP_PATH),
+        hostPathVolume(mountPath: HTTP_PATH, hostPath: MIRROR_PATH)
+    ]
+) {
+    node(LABEL){
+        def CENTOS_MIRROR="${MIRROR_PATH}/cgcs-centos-repo"
+        def stx_MIRROR="${MIRROR_PATH}/cgcs-stx-repo"
+
+        stage('git clone tools') {
+            container(WORKCONTAINER) {
+                sh """
+                    if [ -d "$TOOLS_PATH/.git" ]; then
+                        cd $TOOLS_PATH
+                        git pull
+                    else
+                        git clone -v https://opendev.org/starlingx/tools.git $TOOLS_PATH --depth 1 --branch $BRANCH
+                    fi
+                """
+            }
+        }
+        stage('download mirrors') {
+            container(WORKCONTAINER) {
+                sh """
+                    cd $TOOLS_PATH/centos-mirror-tools/
+                    if [ -d "$TOOLS_PATH/centos-mirror-tools/output" ];then
+                        bash download_mirror.sh
+                    else
+                        cp -r $BACKUP_PATH/* $TOOLS_PATH/centos-mirror-tools/
+                        bash download_mirror.sh
+                    fi
+                    cp -rf $TOOLS_PATH/centos-mirror-tools/output $BACKUP_PATH/
+                """
+            } 
+        }
+        stage('generate centos repo') {
+            container(PODNAME) {
+                sh """
+                    mkdir -p $CENTOS_MIRROR
+                    cp -rf $BACKUP_PATH/output/stx-r1/CentOS/pike/* $CENTOS_MIRROR
+                    wget https://opendev.org/starlingx/root/raw/branch/master/build-tools/repo_files/comps.xml -O $CENTOS_MIRROR/Binary/comps.xml
+                    createrepo -g $CENTOS_MIRROR/Binary/comps.xml $CENTOS_MIRROR/Binary/
+                """
+            } 
+        }
+        stage('check yum centos repo') {
+            container(WORKCONTAINER) {
+                sh """
+                    yum -c /etc/local.yum.conf makecache
+                """
+            } 
+        }
+    }
+}

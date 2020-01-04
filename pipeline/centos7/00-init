@@ -1,0 +1,56 @@
+
+def BRANCH="master"
+def LABEL="stx-build-centos-${BRANCH}-init"
+def PODNAME=LABEL
+def WORKCONTAINER=LABEL
+def WORKDIR="/opt/jenkins"
+def TOOLS_PATH="${WORKDIR}/centos/master/tools"
+def BACKUP_PATH="${WORKDIR}/centos/master/backup"
+def MIRROR_PATH="${WORKDIR}/centos/master/mirror"
+def BUILD_TIME="${WORKDIR}/centos/master/.buildtime"
+def BUILD_DIR="${WORKDIR}/centos/master"
+
+podTemplate(
+    name: PODNAME,
+    cloud: 'kubernetes',
+    namespace: 'devops',
+    label: LABEL,
+    serviceAccount: 'default',
+    containers: [
+        containerTemplate(
+            name: WORKCONTAINER,
+            image: 'kunpeng4code/stx-builder:centos7',
+            ttyEnabled: true,
+            privileged: false,
+            alwaysPullImage:true
+        )
+    ],
+    volumes: [
+        hostPathVolume(mountPath: WORKDIR, hostPath: WORKDIR)
+    ]
+) {
+    node(LABEL){
+        stage('mark build time') {
+            container(WORKCONTAINER) {
+                sh """
+                    echo `date "+%Y%m%d-%H%M%S"` > ${BUILD_TIME}
+                    cat ${BUILD_TIME}
+                """
+            } 
+        }
+        stage('prepare dirs') {
+            container(WORKCONTAINER) {
+                def BUILD_DATE = sh(script: "cat ${BUILD_TIME}", returnStdout: true).trim()
+                BUILD_DIR = "${BUILD_DIR}/${BUILD_DATE}"
+                sh """
+                    mkdir -p ${BUILD_DIR}/compile
+                    mkdir -p ${TOOLS_PATH}
+                    mkdir -p ${BACKUP_PATH}
+                    mkdir -p ${MIRROR_PATH}
+                    mkdir -p ${BUILD_DIR}/distro
+                    mkdir -p ${BUILD_DIR}/flock
+                """
+            } 
+        }
+    }
+}
