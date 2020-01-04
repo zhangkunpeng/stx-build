@@ -6,7 +6,7 @@ rpmspec = "/usr/bin/rpmspec"
 yumbuilddep = "/usr/bin/yum-builddep"
 createrepo = "/usr/bin/createrepo"
 yum = "/usr/bin/yum"
-yumconf = "/etc/local.yum.conf"
+yumconf = "/etc/yum.conf"
 
 def query_srpm_tag(srpmfile, tag):
     cmd = [rpm,"-qp", "--queryformat=%%{%s}" % tag.upper(), "--nosignature", srpmfile]
