@@ -6,7 +6,8 @@ COPY yum.repos.d/* /etc/yum.repos.d/
 RUN sed -i 's/keepcache=0/keepcache=1/' /etc/yum.conf && \
     yum clean all && \
     yum update -y && \
-    yum install -y git rpm-build rpm-sign make createrepo wget bzip2 sudo gcc
+    yum install -y git rpm-build rpm-sign make createrepo wget bzip2 sudo gcc python2-pip && \
+    pip install --upgrade pip 
 
 # Install repo tool
 RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo && \

@@ -1,4 +1,4 @@
-FROM centos:7.4.1708
+FROM centos:7
 
 ENV DISTRO="centos"
 RUN yum install -y epel-release git rpm-build rpm-sign make createrepo wget bzip2 sudo && \
@@ -21,7 +21,5 @@ RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
 
 # Try to continue a yum command even if a StarlingX repo is unavailable.
 RUN yum-config-manager --setopt=StarlingX\*.skip_if_unavailable=1 --save
-
-COPY local.yum.conf /etc/local.yum.conf
 
 CMD /usr/sbin/init
