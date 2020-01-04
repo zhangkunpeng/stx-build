@@ -43,17 +43,15 @@ podTemplate(
 ) {
     node(LABEL){
         stage('check yum centos repo') {
-            container(WORKCONTAINER) {
-                sh """
-                    yum makecache
-                """
+            container("jnlp") {
+                git 'https://github.com/zhangkunpeng/stx-build.git' 
             } 
         }
         stage('install build tools') {
             container(WORKCONTAINER) {
                 sh """
-                    git clone https://github.com/zhangkunpeng/stx-build.git --depth 1
-                    cd stx-build && python setup.py install
+                    pip install -r requirements.txt
+                    python setup.py install
                 """
             } 
         }

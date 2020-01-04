@@ -65,11 +65,11 @@ def build_rpm(ctxt, platform_release):
     process.check_call(cmd)
 
 def install_build_dependence(srpmfile):
-    cmd = [yumbuilddep, "-c", yumconf, srpmfile]
+    cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
     process.check_call(cmd)
 
 def install_rpm(rpmfile):
-    cmd = [yumbuilddep, "-c", yumconf, rpmfile]
+    cmd = [yumbuilddep, "-c", yumconf, "-y", rpmfile]
     process.check_call(cmd)
 
 def update_repodata(repopath):
@@ -85,5 +85,5 @@ def yum_makecache():
     process.check_call(cmd)
 
 def yum_install(package):
-    cmd = [yum,"-c", yumconf, "install", package]
+    cmd = [yum,"-c", yumconf, "install", "-y", package]
     process.check_call(cmd)

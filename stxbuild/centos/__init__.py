@@ -17,7 +17,6 @@ class CentosBuild(build.Build):
         log.info(json.dumps(self.ctxt, indent=4))
 
     def perpare_build(self, ctxt):
-        rpm.yum_install("gcc")
         ctxt.TIS_DIST = self.ctxt.TIS_DIST
         ctxt.distro_dir = os.path.join(ctxt.pkgdir, self.DISTRO)
         self.find_build_mode(ctxt)

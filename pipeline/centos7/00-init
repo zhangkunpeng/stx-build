@@ -4,11 +4,11 @@ def LABEL="stx-build-centos-${BRANCH}-init"
 def PODNAME=LABEL
 def WORKCONTAINER=LABEL
 def WORKDIR="/opt/jenkins"
-def TOOLS_PATH="${WORKDIR}/centos/master/tools"
-def BACKUP_PATH="${WORKDIR}/centos/master/backup"
-def MIRROR_PATH="${WORKDIR}/centos/master/mirror"
-def BUILD_TIME="${WORKDIR}/centos/master/.buildtime"
-def BUILD_DIR="${WORKDIR}/centos/master"
+def TOOLS_PATH="${WORKDIR}/centos/${BRANCH}/tools"
+def BACKUP_PATH="${WORKDIR}/centos/${BRANCH}/backup"
+def MIRROR_PATH="${WORKDIR}/centos/${BRANCH}/mirror"
+def BUILD_TIME="${WORKDIR}/centos/${BRANCH}/.buildtime"
+def BUILD_DIR="${WORKDIR}/centos/${BRANCH}"
 
 podTemplate(
     name: PODNAME,
