@@ -1,11 +1,11 @@
 
 def BRANCH="master"
-def LABEL="stx-build-centos-${BRANCH}-compile"
+def BUILD_FLAG="distro"
+def LABEL="stx-build-centos-${BRANCH}-${BUILD_FLAG}"
 def PODNAME=LABEL
 def WORKCONTAINER=LABEL
 def BUILD_TIME="/opt/jenkins/centos/${BRANCH}/.buildtime"
 def BUILD_DIR="/opt/jenkins/centos/${BRANCH}"
-def BUILD_FLAG="compile"
 def HTTP_PATH="/usr/local/apache2/htdocs"
 def MIRROR_PATH="/opt/jenkins/centos/${BRANCH}/mirror"
 def YUM_CACHE_PATH="${MIRROR_PATH}/cache"
@@ -64,7 +64,7 @@ podTemplate(
                     sh """
                         echo "MIRROR=$MIRROR"
                         echo "BRANCH=$BRANCH"
-                        build --source https://opendev.org/starlingx/compile.git --rootdir $BUILD_DIR --type std
+                        build --source https://opendev.org/starlingx/integ.git --rootdir $BUILD_DIR --type std
                     """
                 }
             } 

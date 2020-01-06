@@ -24,9 +24,11 @@ skip_if_unavailable=1
 metadata_expire=0
 gpgcheck=0
 
-#[TisCentos7Distro]
-#name=Tis-Centos-7-Distro
-#enabled=1
-#baseurl=http://127.0.0.1/cgcs-centos-repo/Binary
-#failovermethod=priority
-#exclude=kernel-devel libvirt-devel
+[TisCentos7Distro]
+name=Tis-Centos-7-Distro
+enabled=1
+baseurl=http://127.0.0.1/cgcs-centos-repo/Binary
+failovermethod=priority
+skip_if_unavailable=1
+exclude=kernel-devel libvirt-devel
+priority=1

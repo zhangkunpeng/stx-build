@@ -37,3 +37,23 @@
 # print(ctxt["a"])
 # print(ctxt.b)
 # print(ctxt["c"])
+
+import subprocess
+
+class Log(object):
+    def write(self, msg):
+        print("aaaaaaaaaaaa")
+        print(msg)
+    def fileno(self):
+        return 0
+
+cmd = ['/usr/bin/find', "."]
+
+#log = open("log.log", 'a')
+#log.fileno()
+# log.write("start")
+# log.flush()
+#log = Log()
+output = subprocess.check_output(cmd)
+
+print("got:", output)

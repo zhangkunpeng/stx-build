@@ -9,6 +9,7 @@ def BACKUP_PATH="${WORKDIR}/centos/${BRANCH}/backup"
 def MIRROR_PATH="${WORKDIR}/centos/${BRANCH}/mirror"
 def BUILD_TIME="${WORKDIR}/centos/${BRANCH}/.buildtime"
 def BUILD_DIR="${WORKDIR}/centos/${BRANCH}"
+def YUM_CACHE_PATH="${MIRROR_PATH}/cache"
 
 podTemplate(
     name: PODNAME,
@@ -49,6 +50,7 @@ podTemplate(
                     mkdir -p ${MIRROR_PATH}
                     mkdir -p ${BUILD_DIR}/distro
                     mkdir -p ${BUILD_DIR}/flock
+                    mkdir -p ${YUM_CACHE_PATH}
                 """
             } 
         }

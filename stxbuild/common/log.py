@@ -44,4 +44,3 @@ def error(msg):
 def critical(msg):
     logger.critical(msg)
     exit(1)
-

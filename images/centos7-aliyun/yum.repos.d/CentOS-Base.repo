@@ -28,6 +28,7 @@ baseurl=http://mirrors.aliyun.com/centos/$releasever/updates/$basearch/
         http://mirrors.cloud.aliyuncs.com/centos/$releasever/updates/$basearch/
 gpgcheck=1
 gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
+exclude=kernel-devel libvirt-devel
  
 #additional packages that may be useful
 [extras]
