@@ -11,3 +11,7 @@ def check_output(*popenargs, **kwargs):
     output = subprocess.check_output(*popenargs, **kwargs).strip()
     log.info("output: %s" % output)
     return output
+
+def call(*popenargs, **kwargs):
+    log.info(json.dumps(popenargs))
+    subprocess.call(*popenargs,**kwargs)

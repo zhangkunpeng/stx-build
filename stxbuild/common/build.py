@@ -3,6 +3,7 @@ import tarfile,re
 import log
 import time
 from context import Context
+from subprocess import CalledProcessError
 
 def get_distro():
     distro = os.environ.get("DISTRO", None)
@@ -37,19 +38,32 @@ class Build(object):
         log.error("Can not find out package list")
 
     def build(self):
-        for pkg in self.package_list():
-            self.pkg = pkg
-            pkg_path = os.path.join(self.distdir, pkg)
-            log.info("****** Source: %s ==> WORK: %s" % (pkg_path,self.workdir))
-            if os.path.exists(pkg_path):
-                self.ctxt[pkg] = Context()
-                self.ctxt[pkg].pkgdir = pkg_path
-                #self.ctxt[pkg].workdir = work_path
-                self.perpare_build(self.ctxt[pkg])
-                self.execute_build(self.ctxt[pkg])
-                self.after_build(self.ctxt[pkg])
-            else:
-                log.warning("Skip: PKG not exist")
+        pkglist = self.package_list()
+        tobuildlist = pkglist
+        
+        while tobuildlist:
+            build_success_list = []
+            for pkg in tobuildlist:
+                self.pkg = pkg
+                pkg_path = os.path.join(self.distdir, pkg)
+                if not os.path.exists(pkg_path):
+                    log.warning("Skip: PKG %s not exist" % pkg_path)
+                    continue
+                log.info("****** Source: %s ==> WORK: %s" % (pkg_path,self.workdir))
+                try:
+                    self.ctxt[pkg] = Context()
+                    self.ctxt[pkg].pkgdir = pkg_path
+                    #self.ctxt[pkg].workdir = work_path
+                    self.perpare_build(self.ctxt[pkg])
+                    self.execute_build(self.ctxt[pkg])
+                    self.after_build(self.ctxt[pkg])
+                    build_success_list.append(pkg)
+                except CalledProcessError as perr:
+                    log.warning("Pkg %s build error" % pkg_path)
+                    log.warning(perr.output)
+            if not build_success_list:
+                log.error("no pkgs were build successfully this turn")
+            tobuildlist = [ x for x in tobuildlist if x not in build_success_list]
 
     def perpare_build(self, ctxt):
         pass
