@@ -19,13 +19,13 @@ def srpm_extract(ctxt):
 
 def query_spec_tag(specfile, tag):
     for line in open(specfile):
-        r = re.search('^%s: (.*)' % tag.capitalize(), line.strip())
+        r = re.search('^%s:(.*)' % tag.capitalize(), line.strip())
         if r :
             out = r.group(1)
-            break
-    if not out:
-        log.error("query spec tag: %s in %s failed" % (tag, specfile))
-    return out.strip()
+            if out:
+                return out.strip()
+    log.error("query spec tag: %s in %s failed" % (tag, specfile))
+    
 
 def build_tmp_spec(ctxt, platform_release, build_type):
     cmd = [rpmspec, "-P", ctxt.orig_spec_path,
