@@ -62,7 +62,8 @@ def build_rpm(ctxt, platform_release):
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
                     "--define=_tis_dist %s" % ctxt.TIS_DIST]
-    process.check_call(cmd)
+    with open(os.path.join(ctxt.workdir, "build.log"), "w") as f:
+        process.check_call(cmd, stdout=f, stderr=f)
 
 def install_build_dependence(srpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
