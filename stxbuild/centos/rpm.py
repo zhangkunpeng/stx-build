@@ -17,7 +17,7 @@ def query_srpm_tag(srpmfile, tag):
 
 def srpm_extract(ctxt):
     # rpm -i --nosignature --root=$ROOT_DIR --define="%_topdir $BUILD_DIR" $ORIG_SRPM_PATH 2>> /dev/null
-    cmd = [rpm, "-i", "--nosignature", "--define='%%_topdir %s'" % ctxt.build_dir, ctxt.orig_srpm_path]
+    cmd = [rpm, "-i", "--nosignature", "--define=%%_topdir %s" % ctxt.build_dir, ctxt.orig_srpm_path]
     process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
 
 def query_spec_tag(specfile, tag):
@@ -63,7 +63,9 @@ def build_rpm(ctxt, platform_release):
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
                     "--define=_tis_dist %s" % ctxt.TIS_DIST]
-    process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
+    result = process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
+    if result == 0:
+        log.info("^^^^^ %s BUILD SUCCESS" % ctxt.fullname)
 
 def install_build_dependence(srpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
