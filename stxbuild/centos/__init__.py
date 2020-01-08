@@ -75,6 +75,7 @@ class CentosBuild(build.Build):
             log.error("Please provide only one of srpm_path or .spec files, not both, in '%s'" % spec_path)
         if not ctxt.orig_spec_path and not ctxt.orig_srpm_path:
             log.error("Please provide only one of srpm_path or .spec files, not None, in '%s'" % spec_path)
+        ctxt.rootdir = os.path.join(self.ctxt.workdir, ctxt.build_mode)
 
     def find_build_data(self, ctxt):
         ctxt.build_srpm_data = os.path.join(ctxt.pkgdir, "%s/build_srpm.data" % self.DISTRO)
