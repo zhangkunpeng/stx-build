@@ -74,12 +74,5 @@ podTemplate(
                 """
             } 
         }
-        stage('check yum centos repo') {
-            container(WORKCONTAINER) {
-                sh """
-                    yum -c /etc/local.yum.conf makecache
-                """
-            } 
-        }
     }
 }

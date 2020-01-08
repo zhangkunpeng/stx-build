@@ -19,7 +19,7 @@ podTemplate(
     containers: [
         containerTemplate(
             name: WORKCONTAINER,
-            image: 'kunpeng4code/stx-builder:centos7-aliyun',
+            image: 'kunpeng4code/stx-builder:centos7',
             ttyEnabled: true,
             privileged: false,
             alwaysPullImage:true
@@ -51,6 +51,8 @@ podTemplate(
         stage('install build tools') {
             container(WORKCONTAINER) {
                 sh """
+                    yum update -y
+                    yum install -y git rpm-build rpm-sign make createrepo wget bzip2 python2-pip gcc
                     pip install -r requirements.txt
                     python setup.py install
                 """
@@ -62,8 +64,7 @@ podTemplate(
                 BUILD_DIR = "${BUILD_DIR}/${BUILD_DATE}/${BUILD_FLAG}"
                 withEnv(["MIRROR=${HTTP_PATH}","BRANCH=${BRANCH}"]){
                     sh """
-                        echo "MIRROR=$MIRROR"
-                        echo "BRANCH=$BRANCH"
+                        echo "MIRROR=$MIRROR BRANCH=$BRANCH"
                         build --source https://opendev.org/starlingx/integ.git --rootdir $BUILD_DIR --type std
                     """
                 }
