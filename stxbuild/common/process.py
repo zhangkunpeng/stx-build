@@ -4,7 +4,7 @@ import subprocess
 
 def logprocess(func):
     def wrapper(*args, **kw):
-        msg = "\n%s\n%s\n......" % ("".ljust(100, "*"), " ".join(args[0]))
+        msg = "\n%s\n%s\n......\n" % ("".ljust(100, "*"), " ".join(args[0]))
         log.info(msg)
         if kw.get("stdoutfile"):
             with open(kw.get("stdoutfile"), 'a') as f:

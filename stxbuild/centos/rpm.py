@@ -38,6 +38,7 @@ def build_tmp_spec(ctxt, platform_release, build_type):
                     "--define=tis_patch_ver %s" % ctxt.TIS_PATCH_VER,
                     "--define=_tis_build_type %s" % build_type]
     ctxt.tmpspec = os.path.join(ctxt.rootdir, "tmp_"+os.path.basename(ctxt.orig_spec_path))
+    if os.path.isfile(ctxt.tmpspec): os.remove(ctxt.tmpspec)
     process.check_call(cmd, stdoutfile=ctxt.tmpspec)
 
 def build_srpm(ctxt, platform_release, build_type):
