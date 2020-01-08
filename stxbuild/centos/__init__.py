@@ -33,7 +33,7 @@ class CentosBuild(build.Build):
     def after_build(self, ctxt):
         self.copy_to_output(ctxt)
         rpm.update_repodata(self.ctxt.output)
-        rpm.yum_clean_cache()
+        #rpm.yum_clean_cache()
         rpm.yum_makecache()
         log.info(json.dumps(ctxt, indent=4))
 
