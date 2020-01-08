@@ -8,14 +8,17 @@ createrepo = "/usr/bin/createrepo"
 yum = "/usr/bin/yum"
 yumconf = "/etc/yum.conf"
 
+def rpmlogfile(ctxt):
+    return os.path.join(ctxt.workdir, "build.log")
+
 def query_srpm_tag(srpmfile, tag):
     cmd = [rpm,"-qp", "--queryformat=%%{%s}" % tag.upper(), "--nosignature", srpmfile]
     return process.check_output(cmd).strip()
 
 def srpm_extract(ctxt):
     # rpm -i --nosignature --root=$ROOT_DIR --define="%_topdir $BUILD_DIR" $ORIG_SRPM_PATH 2>> /dev/null
-    cmd = [rpm, "-i", "--nosignature", "--define", "%%_topdir %s" % ctxt.build_dir, ctxt.orig_srpm_path]
-    process.check_call(cmd, stderr=-1)
+    cmd = [rpm, "-i", "--nosignature", "--define='%%_topdir %s'" % ctxt.build_dir, ctxt.orig_srpm_path]
+    process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
 
 def query_spec_tag(specfile, tag):
     for line in open(specfile):
@@ -34,10 +37,8 @@ def build_tmp_spec(ctxt, platform_release, build_type):
                     "--define=_tis_dist %s" % ctxt.TIS_DIST,
                     "--define=tis_patch_ver %s" % ctxt.TIS_PATCH_VER,
                     "--define=_tis_build_type %s" % build_type]
-    out = process.check_output(cmd)
     ctxt.tmpspec = os.path.join("/tmp", "tmp_"+os.path.basename(ctxt.orig_spec_path))
-    with open(ctxt.tmpspec, "w") as f:
-        f.write(out)
+    process.check_call(cmd, stdoutfile=ctxt.tmpspec)
 
 def build_srpm(ctxt, platform_release, build_type):
     # sed -i -e "1 i%define _tis_build_type $BUILD_TYPE" $SPEC_PATH
@@ -62,8 +63,7 @@ def build_rpm(ctxt, platform_release):
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
                     "--define=_tis_dist %s" % ctxt.TIS_DIST]
-    with open(os.path.join(ctxt.workdir, "build.log"), "w") as f:
-        process.check_call(cmd, stdout=f, stderr=f)
+    process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
 
 def install_build_dependence(srpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
