@@ -11,7 +11,7 @@ def logprocess(func):
         log.info(cmd)
         log.info(dividing_line)
         if kw.get("stdoutfile"):
-            kw.pop("stdout")
+            if "stdout"in kw: kw.pop("stdout")
             with open(kw.get("stdoutfile"), 'a') as f:
                 f.writelines(["", dividing_line, cmd, dividing_line])
                 f.flush

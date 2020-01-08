@@ -37,8 +37,9 @@
 # print(ctxt["a"])
 # print(ctxt.b)
 # print(ctxt["c"])
-def test(*args, a = "1"):
-    print(a, args)
+def test(*args, **kw):
+    if "stdout"in kw: kw.pop("stdout")
+    print(args, kw)
 
 def test2(*args, **kw):
     test(*args, **kw)
