@@ -11,6 +11,7 @@ def logprocess(func):
         log.info(cmd)
         log.info(dividing_line)
         if kw.get("stdoutfile"):
+            kw.pop("stdout")
             with open(kw.get("stdoutfile"), 'a') as f:
                 f.writelines(["", dividing_line, cmd, dividing_line])
                 f.flush
@@ -20,9 +21,10 @@ def logprocess(func):
     return wrapper
 
 @logprocess
-def check_call(stdoutfile=None, *popenargs, **kwargs):
-    if stdoutfile:
-        with open(stdoutfile, "a") as f:
+def check_call(*popenargs, **kwargs):
+    if kwargs.get("stdoutfile"):
+        with open(kwargs.get("stdoutfile"), "a") as f:
+            kwargs.pop("stdoutfile")
             return subprocess.check_call(*popenargs, stdout=f, **kwargs)
     return subprocess.check_call(*popenargs, **kwargs)
 

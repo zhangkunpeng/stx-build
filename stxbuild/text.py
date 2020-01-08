@@ -37,10 +37,10 @@
 # print(ctxt["a"])
 # print(ctxt.b)
 # print(ctxt["c"])
-def test(a="1", *args, **kw):
-    print(a, args, kw)
+def test(*args, a = "1"):
+    print(a, args)
 
 def test2(*args, **kw):
     test(*args, **kw)
 
-test2(a="2")
+test(a="2")
