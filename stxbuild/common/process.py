@@ -12,8 +12,8 @@ def logprocess(func):
         log.info(dividing_line)
         if kw.get("stdoutfile"):
             with open(kw.get("stdoutfile"), 'a') as f:
-                f.writelines(["", dividing_line, cmd, dividing_line])
-                f.flush
+                f.writelines(["\n", dividing_line,"\n", cmd, "\n\n"])
+                f.flush()
         result = func(*args, **kw)
         log.info("Execute result: %s" % result)
         return result
