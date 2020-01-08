@@ -41,6 +41,7 @@ def build_tmp_spec(ctxt, platform_release, build_type):
     process.check_call(cmd, stdoutfile=ctxt.tmpspec)
 
 def build_srpm(ctxt, platform_release, build_type):
+    log.info("##### BUILD SRPM - %s" % ctxt.fullname)
     # sed -i -e "1 i%define _tis_build_type $BUILD_TYPE" $SPEC_PATH
     # sed -i -e "1 i%define tis_patch_ver $TIS_PATCH_VER" $SPEC_PATH
     lines = []
@@ -59,6 +60,7 @@ def build_srpm(ctxt, platform_release, build_type):
     process.check_call(cmd)
 
 def build_rpm(ctxt, platform_release):
+    log.info("##### BUILD RPM - %s" % ctxt.fullname)
     cmd = [rpmbuild,"--rebuild", ctxt.srpmfiles[0], 
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
