@@ -2,21 +2,6 @@ import log
 import json
 import subprocess
 
-@logprocess
-def check_call(stdoutfile=None, *popenargs, **kwargs):
-    if stdoutfile:
-        with open(stdoutfile, "a") as f:
-            return subprocess.check_call(*popenargs, stdout=f, **kwargs)
-    return subprocess.check_call(*popenargs, **kwargs)
-
-@logprocess
-def check_output(*popenargs, **kwargs):
-    return subprocess.check_output(*popenargs, **kwargs).strip()
-
-def call(*popenargs, **kwargs):
-    log.info(json.dumps(popenargs))
-    subprocess.call(*popenargs,**kwargs)
-
 def logprocess(func):
     def wrapper(*args, **kw):
         cmd = " ".join(args[0])
@@ -33,3 +18,19 @@ def logprocess(func):
         log.info("Execute result: %s" % result)
         return result
     return wrapper
+
+@logprocess
+def check_call(stdoutfile=None, *popenargs, **kwargs):
+    if stdoutfile:
+        with open(stdoutfile, "a") as f:
+            return subprocess.check_call(*popenargs, stdout=f, **kwargs)
+    return subprocess.check_call(*popenargs, **kwargs)
+
+@logprocess
+def check_output(*popenargs, **kwargs):
+    return subprocess.check_output(*popenargs, **kwargs).strip()
+
+def call(*popenargs, **kwargs):
+    log.info(json.dumps(popenargs))
+    subprocess.call(*popenargs,**kwargs)
+
