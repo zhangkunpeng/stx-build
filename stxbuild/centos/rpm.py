@@ -71,7 +71,7 @@ def build_rpm(ctxt, platform_release):
 
 def install_build_dependence(srpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
-    process.check_call(cmd)
+    process.check_call(cmd, stdout=-1)
 
 def install_rpm(rpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", rpmfile]
