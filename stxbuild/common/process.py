@@ -4,15 +4,11 @@ import subprocess
 
 def logprocess(func):
     def wrapper(*args, **kw):
-        cmd = " ".join(args[0])
-        dividing_line = "".ljust(len(cmd), "*")
-        log.info("")
-        log.info(dividing_line)
-        log.info(cmd)
-        log.info(dividing_line)
+        msg = "\n%s\n%s\n......" % ("".ljust(100, "*"), " ".join(args[0]))
+        log.info(msg)
         if kw.get("stdoutfile"):
             with open(kw.get("stdoutfile"), 'a') as f:
-                f.writelines(["\n", dividing_line,"\n", cmd, "\n\n"])
+                f.write(msg)
                 f.flush()
         result = func(*args, **kw)
         log.info("Execute result: %s" % result)
