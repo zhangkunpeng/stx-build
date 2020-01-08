@@ -66,6 +66,8 @@ def build_rpm(ctxt, platform_release):
     result = process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
     if result == 0:
         log.info("^^^^^ %s BUILD SUCCESS" % ctxt.fullname)
+    else:
+        log.warning("EEEEE %s BUILD FAILED, log in %s" % (ctxt.fullname, rpmlogfile(ctxt)))
 
 def install_build_dependence(srpmfile):
     cmd = [yumbuilddep, "-c", yumconf, "-y", srpmfile]
@@ -77,7 +79,7 @@ def install_rpm(rpmfile):
 
 def update_repodata(repopath):
     cmd = [createrepo, "--update", repopath]
-    process.check_call(cmd)
+    process.check_call(cmd, stdout=-1)
 
 def yum_clean_cache():
     cmd = [yum,"-c", yumconf, "clean", "all"]
