@@ -3,7 +3,7 @@ import json
 import subprocess
 
 @logprocess
-def check_call(*popenargs, stdoutfile=None, **kwargs):
+def check_call(stdoutfile=None, *popenargs, **kwargs):
     if stdoutfile:
         with open(stdoutfile, "a") as f:
             return subprocess.check_call(*popenargs, stdout=f, **kwargs)
