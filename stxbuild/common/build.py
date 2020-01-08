@@ -28,6 +28,7 @@ class Build(object):
         self.workdir = context.workdir
         self.ctxt.platform_release = time.strftime("%y.%m", time.localtime())
         self.pkg = None
+        self.build_mark_file = os.path.join(self.workdir, "success")
 
     def package_list(self):
         for filename in ["%s_pkg_dirs" % self.DISTRO, "pkg_dirs"]:
@@ -38,8 +39,7 @@ class Build(object):
         log.error("Can not find out package list")
 
     def build(self):
-        pkglist = self.package_list()
-        tobuildlist = pkglist
+        tobuildlist = self.get_to_build_pkgs()
         
         while tobuildlist:
             build_success_list = []
@@ -58,6 +58,7 @@ class Build(object):
                     self.execute_build(self.ctxt[pkg])
                     self.after_build(self.ctxt[pkg])
                     build_success_list.append(pkg)
+                    self.mark_success_build(pkg)
                 except CalledProcessError as perr:
                     log.warning("Pkg %s build error" % pkg_path)
                     log.warning(perr.output)
@@ -88,3 +89,20 @@ class Build(object):
     def mkdirs(self, path):
         if not os.path.exists(path):
             os.makedirs(path)
+
+    def mark_success_build(self, pkg):
+        with open(self.build_mark_file, 'a') as f:
+            f.write(pkg)
+            f.write("\n")
+            f.flush()
+    
+    def get_to_build_pkgs(self):
+        pkglist = self.package_list()
+        if not os.path.isfile(self.build_mark_file):
+            return pkglist
+        with open(self.build_mark_file) as f:
+            for line in f.readlines():
+                if line.strip() in pkglist:
+                    log.info("^^^^^ %s was built successfully last time, skip it")
+                    pkglist.remove(line.strip())
+        return pkglist

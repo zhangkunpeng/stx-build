@@ -45,7 +45,7 @@ class CentosBuild(build.Build):
                 filepath = line
             elif line.startswith("repo:"):
                 # TODO 暂时未发现repo，遇到后再补充
-                filepath = line.replace("repo:",self.ctxt.mirror+"/",1)
+                filepath = line.replace("repo:stx",self.ctxt.distro_repo,1)
             elif line.startswith("3rd_party:"):
                 filepath = line.replace("3rd_party:",self.ctxt.third_party+"/",1)
             elif line.startswith("mirror:"):
