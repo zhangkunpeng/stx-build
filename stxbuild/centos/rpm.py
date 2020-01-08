@@ -37,7 +37,7 @@ def build_tmp_spec(ctxt, platform_release, build_type):
                     "--define=_tis_dist %s" % ctxt.TIS_DIST,
                     "--define=tis_patch_ver %s" % ctxt.TIS_PATCH_VER,
                     "--define=_tis_build_type %s" % build_type]
-    ctxt.tmpspec = os.path.join("/tmp", "tmp_"+os.path.basename(ctxt.orig_spec_path))
+    ctxt.tmpspec = os.path.join(ctxt.workdir, "tmp_"+os.path.basename(ctxt.orig_spec_path))
     process.check_call(cmd, stdoutfile=ctxt.tmpspec)
 
 def build_srpm(ctxt, platform_release, build_type):
