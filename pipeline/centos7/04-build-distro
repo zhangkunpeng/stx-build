@@ -21,7 +21,7 @@ podTemplate(
             name: WORKCONTAINER,
             image: 'kunpeng4code/stx-builder:centos7',
             ttyEnabled: true,
-            privileged: false,
+            privileged: true,
             alwaysPullImage:true
         ),
         containerTemplate(
