@@ -51,7 +51,7 @@ podTemplate(
         stage('install build tools') {
             container(WORKCONTAINER) {
                 sh """
-                    yum clean metadata
+                    yum clean metadata headers dbcache expire-cache
                     yum makecache
                     yum update -y
                     yum install -y git rpm-build rpm-sign make createrepo wget bzip2 python2-pip gcc
