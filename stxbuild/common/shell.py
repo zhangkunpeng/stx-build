@@ -5,6 +5,8 @@ patch="/usr/bin/patch"
 git="/usr/bin/git"
 
 def patch_apply(ctxt, patchfile):
+    if not os.path.isfile(patchfile):
+        return
     log.info("apply patch: %s" % patchfile)
     #patch -f $PATCH_ARGS --no-backup-if-mismatch < $PATCH
     #cmd = [patch, '-f', '-p1', '--no-backup-if-mismatch', '<', patchfile]
