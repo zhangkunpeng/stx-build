@@ -40,7 +40,9 @@ class Build(object):
 
     def build(self):
         tobuildlist = self.get_to_build_pkgs()
-        
+        log.info("\n".join(["need to be built :","".ljust(64,'*')] + \
+                           ["* %s *" % n.ljust(60," ") for n in tobuildlist] + \
+                           ["".ljust(64,'*')]))
         while tobuildlist:
             build_success_list = []
             for pkg in tobuildlist:
