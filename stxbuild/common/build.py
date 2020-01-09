@@ -103,6 +103,6 @@ class Build(object):
         with open(self.build_mark_file) as f:
             for line in f.readlines():
                 if line.strip() in pkglist:
-                    log.info("^^^^^ %s was built successfully last time, skip it")
+                    log.info("^^^^^ %s was built successfully last time, skip it" % line.strip())
                     pkglist.remove(line.strip())
         return pkglist
