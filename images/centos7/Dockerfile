@@ -6,5 +6,6 @@ ENV DISTRO="centos"
 #    pip install --upgrade pip 
 
 COPY yum.conf /etc/yum.conf
+COPY .rpmmacros /root/.rpmmacros
 
 CMD /usr/sbin/init
