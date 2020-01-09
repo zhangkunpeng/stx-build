@@ -62,11 +62,11 @@ def build_srpm(ctxt, platform_release, build_type):
 
 def build_rpm(ctxt, platform_release):
     log.info("##### BUILD RPM - %s" % ctxt.fullname)
-    cmd = ["/bin/bash", "--login", "-c", rpmbuild,"-bb", ctxt.specfiles[0], 
+    cmd = [rpmbuild,"-bb", ctxt.specfiles[0], 
                     "--define=platform_release %s" % platform_release,
                     "--define=%%_topdir %s" % ctxt.build_dir,
                     "--define=_tis_dist %s" % ctxt.TIS_DIST]
-    result = process.check_call(cmd, stdoutfile=rpmlogfile(ctxt))
+    result = process.check_call(cmd, stdoutfile=rpmlogfile(ctxt), shell=True)
     if result == 0:
         log.info("^^^^^ %s BUILD SUCCESS" % ctxt.fullname)
     else:
