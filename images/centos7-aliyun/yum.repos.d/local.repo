@@ -32,3 +32,4 @@ failovermethod=priority
 skip_if_unavailable=1
 exclude=kernel-devel libvirt-devel
 priority=1
+gpgcheck=0
