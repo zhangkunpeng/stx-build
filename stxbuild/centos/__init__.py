@@ -104,6 +104,7 @@ class CentosBuild(build.Build):
         ctxt.PKG_BASE = ctxt.pkgdir
         ctxt.STX_BASE = self.ctxt.distro_repo
         ctxt.PATCHES_BASE = "%s/patches" % self.DISTRO
+        ctxt.DISTRO = self.DISTRO
         
     def find_pkg_name_ver(self, ctxt):
         if ctxt.orig_srpm_path:
